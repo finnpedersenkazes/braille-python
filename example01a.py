@@ -2,16 +2,39 @@ import brlapi
 import errno
 import Xlib.keysymdef.miscellany
 
+
+def init():
+  return {
+    'counter': 0,
+    'message': "Press home, winup/dn or tab to continue ..."
+  }
+
 def view(m):
+  print("Key %ld (%x %x %x %x) !" % (m['key'], m["type"], m["command"], m["argument"], m["flags"]))
+
   if m['counter'] == 0:
     print('display size' + str(b.displaySize))
     print('driver name'+str(b.driverName))
-    print(m['message']);
+    print(m['message'])
     b.writeText(m['message'])
   else:
     print("Counter: %s" %(m['counter']))
-    print(m['message']);
+    print(m['message'][0:40])
     b.writeText("Count: %s, %s" %(m['counter'],m['message']))
+
+def update(m, key):
+  k = b.expandKeyCode(key)
+  m['key'] = key
+  m['type'] = k["type"]
+  m["command"] = k["command"]
+  m["argument"] = k["argument"]
+  m["flags"] = k["flags"]
+
+  if key == brlapi.KEY_CMD_HOME:
+    m['counter'] = m['counter'] + 1
+    m['message'] = "Home Button"
+
+  return m
 
 
 try:
@@ -27,31 +50,35 @@ try:
 
 
   # init model
-  model = {
-    'counter': 0,
-    'message': "Press home, winup/dn or tab to continue ..." 
-  }
+  model = init()
 
-  # view model
-  view(model)
+  # loop
 
-  key = b.readKey()
+  for i in range(1, 5):
 
-  k = b.expandKeyCode(key)
-  b.writeText("Key %ld (%x %x %x %x) !" % (key, k["type"], k["command"], k["argument"], k["flags"]))
-  b.writeText(None,1)
-  b.readKey()
+    # view model
+    view(model)
 
-  underline = chr(brlapi.DOT7 + brlapi.DOT8)
+    key = b.readKey()
+
+    model = update(model, key)
+
+  # b.writeText(None,1)
+  # b.readKey()
+
+  # underline = chr(brlapi.DOT7 + brlapi.DOT8)
   # Note: center() can take two arguments only starting from python 2.4
-  b.write(
-      regionBegin = 1,
-      regionSize = 40,
-      text = "Press any key to exit                 ",
-      orMask = "".center(21,underline) + "".center(19,chr(0)))
 
-  b.acceptKeys(brlapi.rangeType_all,[0])
-  b.readKey()
+  # https://brltty.app/doc/BrlAPIref/structbrlapi__writeArguments__t.html
+
+  # b.write(
+  #     regionBegin = 1,
+  #     regionSize = 40,
+  #     text = "Press any key to exit                 ",
+  #     orMask = "".center(21,underline) + "".center(19,chr(0)))
+
+  # b.acceptKeys(brlapi.rangeType_all,[0])
+  # b.readKey()
 
   b.leaveTtyMode()
   b.closeConnection()
