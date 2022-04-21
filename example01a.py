@@ -1,92 +1,76 @@
 import brlapi
 import errno
-# import Xlib.keysymdef.miscellany
+import Xlib.keysymdef.miscellany
 
+# Helper functions to print debug information to the log
+def print_diagnostics():
+    k = b.expandKeyCode(brlapi.KEY_CMD_HOME)
+    print("Key (Type %x, Command %x, Argument %x, Flags %x) !" %(k["type"], k["command"], k["argument"], k["flags"]))
+    print('display size' + str(b.displaySize))
+    print('driver name'+str(b.driverName))
+    print()
 
-def init():
-    return {
-        'counter': 0,
-        'message': "Press home, winup/dn or tab to continue ..."
-    }
-
-def view(m):
+def print_log(m):
     if m['counter'] == 0:
-        k = b.expandKeyCode(brlapi.KEY_CMD_HOME)
-        print("Key (Type %x, Command %x, Argument %x, Flags %x) !" %(k["type"], k["command"], k["argument"], k["flags"]))
-        print('display size' + str(b.displaySize))
-        print('driver name'+str(b.driverName))
+        print_diagnostics()
         print(m['message'])
-        b.writeText(m['message'])
         print()
     else:
         print("Key (Type %x, Command %x, Argument %x, Flags %x) !" %(m["type"], m["command"], m["argument"], m["flags"]))
         print("Counter: %s" %(m['counter']))
         print(m['message'][0:40])
         print()
+
+# Initialize the model.
+# This should define all possible states.
+def init():
+    return {
+        'counter': 0,
+        'message': "Press home, winup/dn or tab to continue ..."
+    }
+
+# Visualize the model on the braille displan
+def view(m):
+    print_log(m)
+    if m['counter'] == 0:
+        b.writeText(m['message'])
+    else:
         b.writeText("Count: %s, %s" %(m['counter'],m['message']))
 
+# Update the model based based on the key pressed
 def update(m, keyCode):
+
+    # Keep information about the key pressed in the model
     k = b.expandKeyCode(keyCode)
     m["type"] = k["type"]
     m["command"] = k["command"]
     m["argument"] = k["argument"]
     m["flags"] = k["flags"]
 
-#    if key == brlapi.KEY_CMD_HOME:
+    # Update the model
+    # if key == brlapi.KEY_CMD_HOME:
     m['counter'] = m['counter'] + 1
     m['message'] = "Home Button"
-
     return m
 
-
 try:
+    # Connection and Initialization
     b = brlapi.Connection()
     b.enterTtyMode(1)
     b.acceptKeys(brlapi.rangeType_all,[0])
 
-  # b.ignoreKeys(brlapi.rangeType_all,[0])
-
-  # Accept the home, window up and window down braille commands
-  # b.acceptKeys(brlapi.rangeType_command,[brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_HOME, brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_WINUP, brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_WINDN])
-
-  # Accept the tab key
-  # b.acceptKeys(brlapi.rangeType_key,[brlapi.KEY_TYPE_SYM|Xlib.keysymdef.miscellany.XK_Tab])
-
-
-  # init model
+    # The architecture
     model = init()
-
-  # loop
-
-  #  for i in range(1, 5):
     while model['counter'] < 20:
-    # view model
         view(model)
-
         key = b.readKey()
-
         model = update(model, key)
 
-  # b.writeText(None,1)
-  # b.readKey()
-
-  # underline = chr(brlapi.DOT7 + brlapi.DOT8)
-  # Note: center() can take two arguments only starting from python 2.4
-
-  # https://brltty.app/doc/BrlAPIref/structbrlapi__writeArguments__t.html
-
-  # b.write(
-  #     regionBegin = 1,
-  #     regionSize = 40,
-  #     text = "Press any key to exit                 ",
-  #     orMask = "".center(21,underline) + "".center(19,chr(0)))
-
-    b.acceptKeys(brlapi.rangeType_all,[0])
-    b.readKey()
-
+    # Close the connection
     b.leaveTtyMode()
     b.closeConnection()
 
+# Error Handling
 except brlapi.ConnectionError as e:
     if e.brlerrno == brlapi.ERROR_CONNREFUSED:
         print("Connection to %s refused. BRLTTY is too busy..." %(e.host))
