@@ -2,7 +2,7 @@
 
 Being blind and using IT can be quite a challenge. But it is also an opportunity.
 
-The intension with this project is to challenge the idea that braille solutions have to be expensive and for the few. Would it be possible to make games and applications for older braille displays at a relatively low cost. Would it be possible for students using Python could write these solutions?
+The intension with this project is to challenge the idea that braille solutions have to be expensive and for the few. Would it be possible to make games and applications for older braille displays at a relatively low cost? Would it be possible for students using Python to write these solutions?
 
 ## BrlAPI
 
@@ -41,7 +41,8 @@ I imagine using an architecture similar to the Elm Architecture.
 https://guide.elm-lang.org/architecture/
 
 **A Model** that represents the state of the program.
-The program starts by initializing the Model.
+
+**An init function** that initialize the Model.
 
 **A View function** that takes the Model and displays the current state on the braille display.
 
