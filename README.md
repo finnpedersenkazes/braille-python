@@ -8,6 +8,8 @@ The intension with this project is to challenge the idea that braille solutions 
 
 I have just discovered BrlAPI and BrlTTY.
 
+https://brltty.app/
+
 ## Equipment
 
 Braille displays have been around for some time.
