@@ -1,4 +1,6 @@
-#!/bin/python
+#!/bin/python3
+
+# This example counts to 100 on the display. No key input.
 
 import brlapi
 import time
@@ -9,9 +11,12 @@ print('display size: ' + str(brl.displaySize))
 print('driver name: '+str(brl.driverName))
 
 t = time.time()
-#while(time.time() - t <= 5):
+c = 0
 try:
-    brl.writeText('this is a 5 second test')
+    while(c <= 100):
+        c = c + 1
+        time.sleep(1)
+        brl.writeText('counter: %c' %(c))
 
 except Exception as e:
     print(e)

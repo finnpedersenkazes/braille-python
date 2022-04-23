@@ -5,20 +5,23 @@ import Xlib.keysymdef.miscellany
 # Helper functions to print debug information to the log
 def print_diagnostics():
     k = b.expandKeyCode(brlapi.KEY_CMD_HOME)
+    print('DIAGNOSTICS')
     print("Key (Type %x, Command %x, Argument %x, Flags %x) !" %(k["type"], k["command"], k["argument"], k["flags"]))
-    print('display size' + str(b.displaySize))
-    print('driver name'+str(b.driverName))
+    print('Display size: %s' %(str(b.displaySize)))
+    print('Driver name: %s' %(b.driverName))
     print()
 
 def print_log(m):
     if m['counter'] == 0:
         print_diagnostics()
+        print('LOG: Program Initialized')
         print(m['message'])
         print()
     else:
+        print('LOG: Program Started')
         print("Key (Type %x, Command %x, Argument %x, Flags %x) !" %(m["type"], m["command"], m["argument"], m["flags"]))
         print("Counter: %s" %(m['counter']))
-        print(m['message'][0:40])
+        print(m['message'])
         print()
 
 # Initialize the model.
@@ -39,7 +42,6 @@ def view(m):
 
 # Update the model based based on the key pressed
 def update(m, keyCode):
-
     # Keep information about the key pressed in the model
     k = b.expandKeyCode(keyCode)
     m["type"] = k["type"]
@@ -48,9 +50,17 @@ def update(m, keyCode):
     m["flags"] = k["flags"]
 
     # Update the model
-    # if key == brlapi.KEY_CMD_HOME:
     m['counter'] = m['counter'] + 1
-    m['message'] = "Home Button"
+    if keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_HOME:
+        m['message'] = "Home Button"
+    elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNUP:
+        m['message'] = "Line Up"
+    elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNDN:
+        m['message'] = "Line Up"
+    elif keyCode == brlapi.KEY_TYPE_SYM|Xlib.keysymdef.miscellany.XK_Tab:
+        m['message'] = "Tab"
+    else:
+        m['message'] = "x-x-x-x-x-x"
     return m
 
 try:
