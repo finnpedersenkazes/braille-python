@@ -6,27 +6,59 @@ import brlapi
 import errno
 import Xlib.keysymdef.miscellany
 
+
+
+
 # Helper functions to print debug information to the log
-def print_diagnostics():
-    k = b.expandKeyCode(brlapi.KEY_CMD_HOME)
-    print('DIAGNOSTICS')
-    print("Key (Type %x, Command %x, Argument %x, Flags %x) !" %(k["type"], k["command"], k["argument"], k["flags"]))
-    print('Display size: %s' %(str(b.displaySize)))
-    print('Driver name: %s' %(b.driverName))
-    print()
+
+def writeProperty (name, value):
+    try:
+        value = value.decode("utf-8")
+    except AttributeError:
+        pass
+
+    # sys.stdout.write(name + ": " + value + "\n")
+    print(name + ": " + value)
+
+    # source
+    # https://github.com/brltty/brltty/blob/f72a1f8ce45436365523ab29ce8eaf2429caf4a8/Bindings/Python/apitest.py
+
+def print_diagnostics(b):
+    writeProperty("File Descriptor", str(b.fileDescriptor))
+    writeProperty("Server Host", b.host)
+    writeProperty("Authorization Schemes", b.auth)
+    writeProperty("Driver Name", b.driverName)
+    writeProperty("Model Identifier", b.modelIdentifier)
+    writeProperty("Display Width", str(b.displaySize[0]))
+    writeProperty("Display Height", str(b.displaySize[1]))
 
 def print_log(m):
     if m['counter'] == 0:
-        print_diagnostics()
-        print('LOG: Program Initialized')
-        print(m['message'])
-        print()
+        writeProperty("LOG", 'Program Initialized')
+        writeProperty("Counter", m['counter'])
+        writeProperty("Message", m['message'])
     else:
-        print('LOG: Program Started')
-        print("Key (Type %x, Command %x, Argument %x, Flags %x) !" %(m["type"], m["command"], m["argument"], m["flags"]))
-        print("Counter: %s" %(m['counter']))
-        print(m['message'])
-        print()
+        writeProperty("LOG", 'Program Started')
+        writeProperty("Type", m["type"])
+        writeProperty("Command", m["command"])
+        writeProperty("Argument", m["argument"])
+        writeProperty("Flags", m["flags"])
+        writeProperty("Counter", m['counter'])
+        writeProperty("Message", m['message'])
+
+    writeProperty("-------", '-------------------------')
+
+# Template functions
+def establishConnection(b):
+    # Connection and Initialization
+    print_diagnostics(b)
+    b.enterTtyMode()
+    b.acceptKeys(brlapi.rangeType_all,[0])
+
+def closeConnection(b):
+   # Close the connection
+    b.leaveTtyMode()
+    b.closeConnection()
 
 # Initialize the model.
 # This should define all possible states.
@@ -37,7 +69,7 @@ def init():
     }
 
 # Visualize the model on the braille displan
-def view(m):
+def view(b, m):
     print_log(m)
     if m['counter'] == 0:
         b.writeText(m['message'])
@@ -45,7 +77,7 @@ def view(m):
         b.writeText("Count: %s, %s" %(m['counter'],m['message']))
 
 # Update the model based based on the key pressed
-def update(m, keyCode):
+def update(b, m, keyCode):
     # Keep information about the key pressed in the model
     k = b.expandKeyCode(keyCode)
     m["type"] = k["type"]
@@ -68,21 +100,18 @@ def update(m, keyCode):
     return m
 
 try:
-    # Connection and Initialization
+    # Initialization
     b = brlapi.Connection()
-    b.enterTtyMode(1)
-    b.acceptKeys(brlapi.rangeType_all,[0])
+    establishConnection(b)
 
     # The architecture
     model = init()
     while model['counter'] < 20:
-        view(model)
+        view(b, model)
         key = b.readKey()
-        model = update(model, key)
+        model = update(b, model, key)
 
-    # Close the connection
-    b.leaveTtyMode()
-    b.closeConnection()
+    closeConnection(b)
 
 # Error Handling
 except brlapi.ConnectionError as e:
