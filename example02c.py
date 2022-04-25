@@ -17,12 +17,10 @@ print('driver name: '+str(brl.driverName))
 
 start = time.time()
 c = 0
-dot = brlapi.DOT1
+fullCell = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6 | brlapi.DOT7 | brlapi.DOT8
 cells = []
 for i in range(40):
-    cells.append(dot)
-
-fullCell = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6 | brlapi.DOT7 | brlapi.DOT8
+    cells.append(fullCell)
 
 try:
     while(c < 320):
@@ -32,19 +30,19 @@ try:
         if c % 8 == 0:
             dot = brlapi.DOT1
         elif c % 8 == 1:
-            dot = brlapi.DOT2
+            dot = dot | brlapi.DOT2
         elif c % 8 == 2:
-            dot = brlapi.DOT3
+            dot = dot | brlapi.DOT3
         elif c % 8 == 3:
-            dot = brlapi.DOT7
+            dot = dot | brlapi.DOT7
         elif c % 8 == 4:
-            dot = brlapi.DOT8
+            dot = dot | brlapi.DOT8
         elif c % 8 == 5:
-            dot = brlapi.DOT6
+            dot = dot | brlapi.DOT6
         elif c % 8 == 6:
-            dot = brlapi.DOT5
+            dot = dot | brlapi.DOT5
         else: # c % 8 == 7:
-            dot = brlapi.DOT4
+            dot = dot | brlapi.DOT4
 
         cells = []
         for i in range(40):
@@ -56,7 +54,7 @@ try:
                 else:
                     cells.append(0)
                 
-        print('c: %s, dot: %s, time: %s' %(str(c), str(dot), str(timepassed)))
+        print('c: %s, dot: %s, time: %s seconds' %(str(c), str(dot), str(timepassed)))
 
         brl.writeDots(bytes(cells))
 

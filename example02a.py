@@ -15,7 +15,7 @@ c = 0
 try:
     while(c <= 100):
         c = c + 1
-        time.sleep(1)
+        time.sleep(0.1)
         brl.writeText('counter: %c' %(c))
 
 except Exception as e:

@@ -3,7 +3,7 @@ import errno
 import Xlib.keysymdef.miscellany
 try:
   b = brlapi.Connection()
-  b.enterTtyMode()
+  b.enterTtyMode(1)
   b.ignoreKeys(brlapi.rangeType_all,[0])
 
   # Accept the home, window up and window down braille commands
