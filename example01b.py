@@ -12,10 +12,10 @@ import Xlib.keysymdef.miscellany
 # Helper functions to print debug information to the log
 
 def writeProperty (name, value):
-    try:
-        value = value.decode("utf-8")
-    except AttributeError:
-        pass
+    #try:
+    #    value = value.decode("utf-8")
+    #except AttributeError:
+    #    pass
 
     # sys.stdout.write(name + ": " + value + "\n")
     print(name + ": " + value)
@@ -25,25 +25,26 @@ def writeProperty (name, value):
 
 def print_diagnostics(b):
     writeProperty("File Descriptor", str(b.fileDescriptor))
-    writeProperty("Server Host", b.host)
-    writeProperty("Authorization Schemes", b.auth)
-    writeProperty("Driver Name", b.driverName)
-    writeProperty("Model Identifier", b.modelIdentifier)
+    writeProperty("Server Host", str(b.host))
+    writeProperty("Authorization Schemes", str(b.auth))
+    writeProperty("Driver Name", str(b.driverName))
+    writeProperty("Model Identifier", str(b.modelIdentifier))
     writeProperty("Display Width", str(b.displaySize[0]))
     writeProperty("Display Height", str(b.displaySize[1]))
+    writeProperty(".......", '.........................')
 
 def print_log(m):
     if m['counter'] == 0:
         writeProperty("LOG", 'Program Initialized')
-        writeProperty("Counter", m['counter'])
+        writeProperty("Counter", str(m['counter']))
         writeProperty("Message", m['message'])
     else:
         writeProperty("LOG", 'Program Started')
-        writeProperty("Type", m["type"])
-        writeProperty("Command", m["command"])
-        writeProperty("Argument", m["argument"])
-        writeProperty("Flags", m["flags"])
-        writeProperty("Counter", m['counter'])
+        writeProperty("Type", str(m["type"]))
+        writeProperty("Command", str(m["command"]))
+        writeProperty("Argument", str(m["argument"]))
+        writeProperty("Flags", str(m["flags"]))
+        writeProperty("Counter", str(m['counter']))
         writeProperty("Message", m['message'])
 
     writeProperty("-------", '-------------------------')
@@ -52,7 +53,7 @@ def print_log(m):
 def establishConnection(b):
     # Connection and Initialization
     print_diagnostics(b)
-    b.enterTtyMode()
+    b.enterTtyMode(1)
     b.acceptKeys(brlapi.rangeType_all,[0])
 
 def closeConnection(b):
@@ -80,6 +81,7 @@ def view(b, m):
 def update(b, m, keyCode):
     # Keep information about the key pressed in the model
     k = b.expandKeyCode(keyCode)
+    m["code"] = "0X%X" % keyCode
     m["type"] = k["type"]
     m["command"] = k["command"]
     m["argument"] = k["argument"]
@@ -103,12 +105,16 @@ try:
     # Initialization
     b = brlapi.Connection()
     establishConnection(b)
+    timeout = 10 #seconds
 
     # The architecture
     model = init()
     while model['counter'] < 20:
         view(b, model)
         key = b.readKey()
+        #key = b.readKeyWithTimeout(timeout * 1000)
+        #if not key: break
+        
         model = update(b, model, key)
 
     closeConnection(b)
