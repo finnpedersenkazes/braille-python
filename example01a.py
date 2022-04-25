@@ -60,7 +60,7 @@ def update(m, keyCode):
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNUP:
         m['message'] = "Line Up"
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNDN:
-        m['message'] = "Line Up"
+        m['message'] = "Line Down"
     elif keyCode == brlapi.KEY_TYPE_SYM|Xlib.keysymdef.miscellany.XK_Tab:
         m['message'] = "Tab"
     else:
@@ -70,7 +70,8 @@ def update(m, keyCode):
 try:
     # Connection and Initialization
     b = brlapi.Connection()
-    b.enterTtyMode(1)
+    #b.enterTtyMode(1)
+    b.enterTtyModeWithPath()
     b.acceptKeys(brlapi.rangeType_all,[0])
 
     # The architecture

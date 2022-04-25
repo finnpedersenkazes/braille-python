@@ -23,14 +23,14 @@ def writeProperty (name, value):
     # source
     # https://github.com/brltty/brltty/blob/f72a1f8ce45436365523ab29ce8eaf2429caf4a8/Bindings/Python/apitest.py
 
-def print_diagnostics(b):
-    writeProperty("File Descriptor", str(b.fileDescriptor))
-    writeProperty("Server Host", str(b.host))
-    writeProperty("Authorization Schemes", str(b.auth))
-    writeProperty("Driver Name", str(b.driverName))
-    writeProperty("Model Identifier", str(b.modelIdentifier))
-    writeProperty("Display Width", str(b.displaySize[0]))
-    writeProperty("Display Height", str(b.displaySize[1]))
+def print_diagnostics(brl):
+    writeProperty("File Descriptor", str(brl.fileDescriptor))
+    writeProperty("Server Host", str(brl.host))
+    writeProperty("Authorization Schemes", str(brl.auth))
+    writeProperty("Driver Name", str(brl.driverName))
+    writeProperty("Model Identifier", str(brl.modelIdentifier))
+    writeProperty("Display Width", str(brl.displaySize[0]))
+    writeProperty("Display Height", str(brl.displaySize[1]))
     writeProperty(".......", '.........................')
 
 def print_log(m):
@@ -40,12 +40,15 @@ def print_log(m):
         writeProperty("Message", m['message'])
     else:
         writeProperty("LOG", 'Program Started')
+        writeProperty("Code", str(m["code"]))
         writeProperty("Type", str(m["type"]))
         writeProperty("Command", str(m["command"]))
         writeProperty("Argument", str(m["argument"]))
         writeProperty("Flags", str(m["flags"]))
         writeProperty("Counter", str(m['counter']))
         writeProperty("Message", m['message'])
+        writeProperty("Text", m['text'])
+        
 
     writeProperty("-------", '-------------------------')
 
@@ -54,26 +57,30 @@ def print_log(m):
 def init():
     return {
         'counter': 0,
-        'message': "Press home, winup/dn or tab to continue ..."
+        'text': '',
+        'message': "Press a key to continue ..."
     }
 
 # Visualize the model on the braille displan
-def view(b, m):
+def view(brl, m):
     print_log(m)
     if m['counter'] == 0:
-        b.writeText(m['message'])
+        brl.writeText(m['message'])
     else:
-        b.writeText("Count: %s, %s" %(m['counter'],m['message']))
+        brl.writeText("Count: %i, %s, %s" %(m['counter'], m['message'], m['text']))
 
 # Update the model based based on the key pressed
-def update(b, m, keyCode):
+def update(brl, m, keyCode):
     # Keep information about the key pressed in the model
-    k = b.expandKeyCode(keyCode)
+    k = brl.expandKeyCode(keyCode)
     m["code"] = "0X%X" % keyCode
     m["type"] = k["type"]
     m["command"] = k["command"]
     m["argument"] = k["argument"]
     m["flags"] = k["flags"]
+
+    if m["type"] == 0:
+        m["text"] = m["text"] + chr(m['argument'])
 
     # Update the model
     m['counter'] = m['counter'] + 1
@@ -82,20 +89,22 @@ def update(b, m, keyCode):
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNUP:
         m['message'] = "Line Up"
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNDN:
-        m['message'] = "Line Up"
+        m['message'] = "Line Down"
     elif keyCode == brlapi.KEY_TYPE_SYM|Xlib.keysymdef.miscellany.XK_Tab:
         m['message'] = "Tab"
     else:
-        m['message'] = "x-x-x-x-x-x"
+        m['message'] = "Text: "
     return m
 
 try:
     # Initialization
     b = brlapi.Connection()
     print_diagnostics(b)
-    b.enterRawMode(b.driverName)
-    b.leaveRawMode()
-    b.enterTtyMode(1)
+    #b.enterRawMode(b.driverName)
+    #b.leaveRawMode()
+    #b.enterTtyMode(1)
+    b.enterTtyModeWithPath()
+
     
     #b.acceptKeys(brlapi.rangeType_all,[0])
     timeout = 10 #seconds
