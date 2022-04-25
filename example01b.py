@@ -49,18 +49,6 @@ def print_log(m):
 
     writeProperty("-------", '-------------------------')
 
-# Template functions
-def establishConnection(b):
-    # Connection and Initialization
-    print_diagnostics(b)
-    b.enterTtyMode(1)
-    b.acceptKeys(brlapi.rangeType_all,[0])
-
-def closeConnection(b):
-   # Close the connection
-    b.leaveTtyMode()
-    b.closeConnection()
-
 # Initialize the model.
 # This should define all possible states.
 def init():
@@ -104,7 +92,12 @@ def update(b, m, keyCode):
 try:
     # Initialization
     b = brlapi.Connection()
-    establishConnection(b)
+    print_diagnostics(b)
+    b.enterRawMode(b.driverName)
+    b.leaveRawMode()
+    b.enterTtyMode(1)
+    
+    #b.acceptKeys(brlapi.rangeType_all,[0])
     timeout = 10 #seconds
 
     # The architecture
@@ -113,11 +106,14 @@ try:
         view(b, model)
         key = b.readKey()
         #key = b.readKeyWithTimeout(timeout * 1000)
-        #if not key: break
+        if not key:
+            print('No key')
         
         model = update(b, model, key)
 
-    closeConnection(b)
+
+    b.leaveTtyMode()
+    b.closeConnection()
 
 # Error Handling
 except brlapi.ConnectionError as e:
