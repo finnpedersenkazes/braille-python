@@ -1,6 +1,6 @@
 #!/bin/python3
 
-# This example counts to 100 on the display. No key input.
+# This example fills the display with dots
 # 
 
 import brlapi
