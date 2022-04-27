@@ -4,7 +4,7 @@
 
 import brlapi
 import errno
-import Xlib.keysymdef.miscellany
+#import Xlib.keysymdef.miscellany
 import time
 
 # Helper functions to print debug information to the log
