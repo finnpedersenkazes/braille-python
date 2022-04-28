@@ -274,7 +274,7 @@ def updateByKey(brl, m, keyCode):
         m['message'] = "Line Up"
         m['cursorPos'] = cursorUp(m['cursorPos'])
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNDN:
-        m['message'] = "Good bye"
+        m['message'] = "Goodbye"
         m['stop'] = True
     elif (m["type"] == 536870912) and (m["command"] == 2228224) and (m["argument"] == 0):
         m['message'] = "Space bar"
@@ -298,13 +298,15 @@ try:
     # The architecture
     model = init()
     view(b, model)
-    key =  b.readKey(1)
+    delay = 0.1 # seconds
+    waitForKeyPress = True
+    key =  b.readKey(waitForKeyPress)
     while not model['stop']:
         view(b, model)
         
-        key = b.readKey(0)
+        key = b.readKey(not waitForKeyPress)
         if not key:
-            time.sleep(0.1)
+            time.sleep(delay)
             model = updateByTime(model)
         else:
             model = updateByKey(b, model, key)
