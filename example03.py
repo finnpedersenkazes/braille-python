@@ -56,7 +56,7 @@ def init():
         'stop': False,
         'counter': 0,
         'text': '',
-        'message': "Press the spacebar to start"
+        'message': "Press the space bar to start"
     }
 
 def collisionDetection(m):
@@ -274,7 +274,7 @@ def updateByKey(brl, m, keyCode):
         m['message'] = "Line Up"
         m['cursorPos'] = cursorUp(m['cursorPos'])
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNDN:
-        m['message'] = "Goodbye"
+        m['message'] = "You got " + str(m['points']) + " points. Goodbye."
         m['stop'] = True
     elif (m["type"] == 536870912) and (m["command"] == 2228224) and (m["argument"] == 0):
         m['message'] = "Space bar"
@@ -302,8 +302,6 @@ try:
     waitForKeyPress = True
     key =  b.readKey(waitForKeyPress)
     while not model['stop']:
-        view(b, model)
-        
         key = b.readKey(not waitForKeyPress)
         if not key:
             time.sleep(delay)
@@ -311,8 +309,8 @@ try:
         else:
             model = updateByKey(b, model, key)
 
-    view(b, model)
-    time.sleep(5)
+        view(b, model)
+    time.sleep(10)
 
     b.leaveTtyMode()
     b.closeConnection()
