@@ -54,8 +54,16 @@ def init():
         'message': "Press the spacebar to start",
         'cursorPos': 0, # 0..3
         'obstaclePos': 9, # 0..4
-        'points': 0 # 0..999
+        'points': 0, # 0..999
+        'collision': False
     }
+
+def collisionDetection(m):
+    if ('cursorPos' in m) and ('obstaclePos' in m):
+        m['collision'] = (m['cursorPos'] in [0, 1]) and (m['obstaclePos'] in [2, 3, 4])
+    else:
+        m['collision'] = False
+    return m
 
 def helper(m):
     # fullCell = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6 | brlapi.DOT7 | brlapi.DOT8
@@ -71,8 +79,6 @@ def helper(m):
         cursorDots = brlapi.DOT2 | brlapi.DOT5
     elif m['cursorPos'] == 3:
         cursorDots = brlapi.DOT1 | brlapi.DOT4
-
-    cursorObstacleColition = (m['cursorPos'] in [0, 1]) and (m['obstaclePos'] in [2, 3, 4])
 
     # Calculate moving obstacles
     # for cells in range(0, 30)
@@ -112,7 +118,7 @@ def helper(m):
         elif m['obstaclePos'] == 9:
             cell04 = brlapi.DOT3 | brlapi.DOT7 | brlapi.DOT6 | brlapi.DOT8
 
-        if (i == 0) and cursorObstacleColition:
+        if (i == 0) and m['collision']:
             if (m['counter'] % 2 == 0):
                 cell00 = brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT8
             else:            
@@ -183,6 +189,8 @@ def updateByTime(m):
     m['counter'] = m['counter'] + 1
     if m['counter'] % 2 == 0:
         m['obstaclePos'] = obstacleAdvance(m['obstaclePos'])
+    
+    m = collisionDetection(m)
     return m
 
 # Update the model based based on the key pressed
@@ -208,6 +216,14 @@ def updateByKey(brl, m, keyCode):
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNDN:
         m['message'] = "Line Down"
         m['cursorPos'] = cursorDown(m['cursorPos'])
+    elif (m["type"] == 536870912) and (m["command"] == 2228224):
+        m['message'] = "Chord = Space bar"
+        if m['cursorPos'] == 3:
+            m['cursorPos'] = 0
+        else:
+            m['cursorPos'] = cursorUp(m['cursorPos'])
+        
+    m = collisionDetection(m)
     return m
 
 try:
