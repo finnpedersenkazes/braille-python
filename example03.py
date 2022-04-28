@@ -49,13 +49,14 @@ def printLog(m):
 # This should define all possible states.
 def init():
     return {
-        'counter': 0,
-        'text': '',
-        'message': "Press the spacebar to start",
         'cursorPos': 0, # 0..3
         'obstaclePos': 9, # 0..4
         'points': 0, # 0..999
-        'collision': False
+        'collision': False,
+        'stop': False,
+        'counter': 0,
+        'text': '',
+        'message': "Press the spacebar to start"
     }
 
 def collisionDetection(m):
@@ -64,6 +65,44 @@ def collisionDetection(m):
     else:
         m['collision'] = False
     return m
+
+def pointsCalculation(m):
+    if m['obstaclePos'] == 4:
+        if m['collision']:
+            m['points'] = m['points'] - 2
+        else:
+            m['points'] = m['points'] + 1
+    if m['points'] < 0:
+        m['points'] = 0
+    if m['points'] > 99:
+        m['points'] = 99
+    return m
+
+def digitDots(i):
+    if i == 0:
+        dots = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT6
+    elif i == 1:
+        dots = brlapi.DOT1 | brlapi.DOT6
+    elif i == 2:
+        dots = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT6
+    elif i == 3:
+        dots = brlapi.DOT1 | brlapi.DOT4 | brlapi.DOT6
+    elif i == 4:
+        dots = brlapi.DOT1 | brlapi.DOT4| brlapi.DOT5 | brlapi.DOT6
+    elif i == 5:
+        dots = brlapi.DOT1 | brlapi.DOT5 | brlapi.DOT6
+    elif i == 6:
+        dots = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT6
+    elif i == 7:
+        dots = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6
+    elif i == 8:
+        dots = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT5 | brlapi.DOT6
+    elif i == 9:
+        dots = brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5| brlapi.DOT6
+    else:
+        dots = 0
+    
+    return dots
 
 def helper(m):
     # fullCell = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6 | brlapi.DOT7 | brlapi.DOT8
@@ -144,9 +183,14 @@ def helper(m):
     cells.append(brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5) # t
     cells.append(brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4) # s
     cells.append(brlapi.DOT2 | brlapi.DOT5) # :
-    cells.append(brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT6) # 0
-    cells.append(brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT6) # 0
-    cells.append(brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT6) # 0
+    
+    # Display number of points. French system
+    cells.append(brlapi.DOT6) # Number coming
+    
+    tens = (m['points'] // 10) % 10
+    unity = m['points'] % 10
+    cells.append(digitDots(tens)) # 0
+    cells.append(digitDots(unity)) # 0
     
     print(str(cells))
 
@@ -155,10 +199,11 @@ def helper(m):
 # Visualize the model on the braille displan
 def view(brl, m):
     printLog(m)
-    if m['counter'] == 0:
+    if (m['counter'] == 0) or m['stop']:
         brl.writeText(m['message'])
     else:
         brl.writeDots(helper(m))
+            
 
 def cursorUp(position):
     # Legal positions: 0..3, blocked
@@ -186,11 +231,14 @@ def obstacleAdvance(position):
 
 # Update the model based because time passed
 def updateByTime(m):
+    m['message'] = "Time flies when you are having fun"
+    
     m['counter'] = m['counter'] + 1
     if m['counter'] % 2 == 0:
         m['obstaclePos'] = obstacleAdvance(m['obstaclePos'])
+        m = collisionDetection(m)
+        m = pointsCalculation(m)
     
-    m = collisionDetection(m)
     return m
 
 # Update the model based based on the key pressed
@@ -210,19 +258,22 @@ def updateByKey(brl, m, keyCode):
     m['counter'] = m['counter'] + 1
     if keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_HOME:
         m['message'] = "Home Button"
+        m['stop'] = True
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNUP:
         m['message'] = "Line Up"
         m['cursorPos'] = cursorUp(m['cursorPos'])
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNDN:
-        m['message'] = "Line Down"
-        m['cursorPos'] = cursorDown(m['cursorPos'])
-    elif (m["type"] == 536870912) and (m["command"] == 2228224):
-        m['message'] = "Chord = Space bar"
+        m['message'] = "Good bye"
+        m['stop'] = True
+    elif (m["type"] == 536870912) and (m["command"] == 2228224) and (m["argument"] == 0):
+        m['message'] = "Space bar"
         if m['cursorPos'] == 3:
             m['cursorPos'] = 0
         else:
             m['cursorPos'] = cursorUp(m['cursorPos'])
-        
+    else:
+        m['message'] = "Unknown key"
+           
     m = collisionDetection(m)
     return m
 
@@ -236,16 +287,18 @@ try:
     # The architecture
     model = init()
     view(b, model)
-    key = b.readKey(1)
-    while model['counter'] < 200:
+    key =  b.readKey(1)
+    while not model['stop']:
         view(b, model)
         
         key = b.readKey(0)
         if not key:
-            time.sleep(0.2)            
+            time.sleep(0.1)
             model = updateByTime(model)
         else:
             model = updateByKey(b, model, key)
+
+    view(b, model)
 
     b.leaveTtyMode()
     b.closeConnection()
