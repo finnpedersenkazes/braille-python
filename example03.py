@@ -69,7 +69,7 @@ def collisionDetection(m):
 def pointsCalculation(m):
     if m['obstaclePos'] == 4:
         if m['collision']:
-            m['points'] = m['points'] - 2
+            m['points'] = m['points'] - 1
         else:
             m['points'] = m['points'] + 1
     if m['points'] < 0:
@@ -77,6 +77,18 @@ def pointsCalculation(m):
     if m['points'] > 99:
         m['points'] = 99
     return m
+
+def tens(i):
+    i = i % 100
+    if i > 9:
+        i = int(str(i)[0])
+    else:
+        i = 0
+    return i
+
+def units(i):
+    return i % 10
+
 
 def digitDots(i):
     if i == 0:
@@ -186,11 +198,8 @@ def helper(m):
     
     # Display number of points. French system
     cells.append(brlapi.DOT6) # Number coming
-    
-    tens = (m['points'] // 10) % 10
-    unity = m['points'] % 10
-    cells.append(digitDots(tens)) # 0
-    cells.append(digitDots(unity)) # 0
+    cells.append(digitDots(tens(m['points']))) # 0
+    cells.append(digitDots(units(m['points']))) # 0
     
     print(str(cells))
 
@@ -238,6 +247,8 @@ def updateByTime(m):
         m['obstaclePos'] = obstacleAdvance(m['obstaclePos'])
         m = collisionDetection(m)
         m = pointsCalculation(m)
+    if m['obstaclePos'] == 1:
+        m['cursorPos'] = 0
     
     return m
 
@@ -299,6 +310,7 @@ try:
             model = updateByKey(b, model, key)
 
     view(b, model)
+    time.sleep(5)
 
     b.leaveTtyMode()
     b.closeConnection()
