@@ -6,6 +6,7 @@ import brlapi
 import errno
 #import Xlib.keysymdef.miscellany
 import time
+import os
 
 # Helper functions to print debug information to the log
 
@@ -23,6 +24,8 @@ def printDiagnostics(brl):
     printProperty(".......", '.........................')
 
 def printLog(m):
+    os.system('clear')
+    
     if m['counter'] == 0:
         printProperty("LOG", 'Program Initialized')
         printProperty("Counter", str(m['counter']))
@@ -45,18 +48,51 @@ def printLog(m):
 
     printProperty("-------", '-------------------------')
 
+# Message in local language
+def getMessage(language, code):
+    if code == 'start':
+        if language == 'fr':
+            message = "Appuyez sur une touche"
+        else:
+            message = "Press any key to start"
+    elif code == 'highscore':
+        if language == 'fr':
+            message = "Meilleur résultat:"
+        else:
+            message = "Highest score:"
+    elif code == 'points':
+        if language == 'fr':
+            message = "Points :"
+        else:
+            message = "Points:"
+    else:
+        message = ''
+    return message
+
 # Initialize the model.
 # This should define all possible states.
-def init():
+def init(brl):
+    numberOfBlocks = brl.displaySize[0] // 5
+    if numberOfBlocks >= 6:
+        pointBlocks = 2
+    else:
+        pointBlocks = 1
+    language = 'en' # or 'fr'
+    
     return {
         'cursorPos': 0, # 0..3
         'obstaclePos': 9, # 0..4
         'points': 0, # 0..999
         'collision': False,
         'stop': False,
+        'gameCounter': 0,
+        'highScore': 0,
         'counter': 0,
         'text': '',
-        'message': "Press the space bar to start"
+        'language': language,
+        'message': getMessage(language, 'start'),
+        'pointBlocks': pointBlocks,
+        'gameBlocks': numberOfBlocks - pointBlocks
     }
 
 def collisionDetection(m):
@@ -78,6 +114,11 @@ def pointsCalculation(m):
         m['points'] = 99
     return m
 
+def timeUpDetection(m):
+    if time.time() - m['gameStartedAt'] > 60:
+        m['stop'] = True
+    return m        
+
 def tens(i):
     i = i % 100
     if i > 9:
@@ -92,7 +133,7 @@ def units(i):
 
 def digitDots(i):
     if i == 0:
-        dots = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT6
+        dots = brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6
     elif i == 1:
         dots = brlapi.DOT1 | brlapi.DOT6
     elif i == 2:
@@ -132,8 +173,10 @@ def helper(m):
         cursorDots = brlapi.DOT1 | brlapi.DOT4
 
     # Calculate moving obstacles
-    # for cells in range(0, 30)
-    for i in range(0, 6):
+    # for cells in range(0, 30) 40 cells display
+    # for cells in range(0, 15) 20 cells display
+   
+    for i in range(0, m['gameBlocks']):
         cell00 = 0
         cell01 = 0
         cell02 = 0
@@ -189,11 +232,12 @@ def helper(m):
     # Display score
     # for cells in range(30, 40): 
     cells.append(brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4) # p
-    cells.append(brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 ) # o
-    cells.append(brlapi.DOT2 | brlapi.DOT4) # i
-    cells.append(brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5) # n
-    cells.append(brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5) # t
-    cells.append(brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4) # s
+    if m['pointBlocks'] > 1:
+        cells.append(brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 ) # o
+        cells.append(brlapi.DOT2 | brlapi.DOT4) # i
+        cells.append(brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5) # n
+        cells.append(brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5) # t
+        cells.append(brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4) # s
     cells.append(brlapi.DOT2 | brlapi.DOT5) # :
     
     # Display number of points. French system
@@ -238,6 +282,25 @@ def obstacleAdvance(position):
         position = 10
     return position - 1
 
+# Update the model at game start
+def updateByGameStart(m):
+    m['gameStartedAt'] = time.time()
+    m['stop'] = False
+    return m
+
+# Update the model at game end
+def updateByGameEnd(m):
+    if m['points'] > m['highScore']:
+        m['highScore'] = m['points']
+    m['gameCounter'] = m['gameCounter'] + 1
+    m['message'] = getMessage(m['language'], 'points') + ' ' + str(m['points'])
+    return m
+
+# Update the High score message
+def updateHighScoreMessage(m):
+    m['message'] = getMessage(m['language'], 'highscore') + ' ' + str(m['highScore'])
+    return m
+
 # Update the model based because time passed
 def updateByTime(m):
     m['message'] = "Time flies when you are having fun"
@@ -250,6 +313,7 @@ def updateByTime(m):
     if m['obstaclePos'] == 1:
         m['cursorPos'] = 0
     
+    m = timeUpDetection(m)
     return m
 
 # Update the model based based on the key pressed
@@ -274,7 +338,6 @@ def updateByKey(brl, m, keyCode):
         m['message'] = "Line Up"
         m['cursorPos'] = cursorUp(m['cursorPos'])
     elif keyCode == brlapi.KEY_TYPE_CMD|brlapi.KEY_CMD_LNDN:
-        m['message'] = "You got " + str(m['points']) + " points. Goodbye."
         m['stop'] = True
     elif (m["type"] == 536870912) and (m["command"] == 2228224) and (m["argument"] == 0):
         m['message'] = "Space bar"
@@ -286,6 +349,7 @@ def updateByKey(brl, m, keyCode):
         m['message'] = "Unknown key"
            
     m = collisionDetection(m)
+    m = timeUpDetection(m)
     return m
 
 try:
@@ -296,20 +360,30 @@ try:
     b.acceptKeys(brlapi.rangeType_all,[0])
 
     # The architecture
-    model = init()
+    model = init(b)
     view(b, model)
     delay = 0.1 # seconds
+    gameDuration = 60 # seconds
     waitForKeyPress = True
-    key =  b.readKey(waitForKeyPress)
-    while not model['stop']:
-        key = b.readKey(not waitForKeyPress)
-        if not key:
-            time.sleep(delay)
-            model = updateByTime(model)
-        else:
-            model = updateByKey(b, model, key)
+    for _ in range(0, 5):
+        key =  b.readKey(waitForKeyPress)
+        model = updateByGameStart(model)
+        while not model['stop']:
+            key = b.readKey(not waitForKeyPress)
+            if not key:
+                time.sleep(delay)
+                model = updateByTime(model)
+            else:
+                model = updateByKey(b, model, key)
 
+            view(b, model)
+
+        model = updateByGameEnd(model)
         view(b, model)
+        time.sleep(10)
+       
+    model = updateHighScoreMessage(model)
+    view(b, model)
     time.sleep(10)
 
     b.leaveTtyMode()
