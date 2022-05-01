@@ -6,6 +6,7 @@ import brlapi
 import errno
 #import Xlib.keysymdef.miscellany
 import time
+import datetime
 import os
 
 # Helper functions to print debug information to the log
@@ -49,22 +50,31 @@ def printLog(m):
     printProperty("-------", '-------------------------')
 
 # Message in local language
-def getMessage(language, code):
+def getMessage(displayWidth, language, code):
+                     # 12345678901234567890
     if code == 'start':
         if language == 'fr':
-            message = "Appuyez sur une touche"
+            if displayWidth <= 20:
+                message = "Youche une touche"
+            else:
+                message = "Appuyez sur une touche"
         else:
-            message = "Press any key to start"
+            message = "Press any key"
     elif code == 'highscore':
         if language == 'fr':
-            message = "Meilleur résultat:"
+            message = "Max points :"
         else:
-            message = "Highest score:"
+            message = "Max score:"
     elif code == 'points':
         if language == 'fr':
             message = "Points :"
         else:
             message = "Points:"
+    elif code == 'birthday':
+        if language == 'fr':
+            message = "Joyeux anniversaire"
+        else:
+            message = "Happy birthday"
     else:
         message = ''
     return message
@@ -72,7 +82,8 @@ def getMessage(language, code):
 # Initialize the model.
 # This should define all possible states.
 def init(brl):
-    numberOfBlocks = brl.displaySize[0] // 5
+    displayWidth = brl.displaySize[0]
+    numberOfBlocks = displayWidth // 5
     if numberOfBlocks >= 6:
         pointBlocks = 2
     else:
@@ -90,9 +101,11 @@ def init(brl):
         'counter': 0,
         'text': '',
         'language': language,
-        'message': getMessage(language, 'start'),
+        'displayWidth': displayWidth,
+        'message': getMessage(displayWidth, language, 'start'),
         'pointBlocks': pointBlocks,
-        'gameBlocks': numberOfBlocks - pointBlocks
+        'gameBlocks': numberOfBlocks - pointBlocks,
+        'gameDuration': 30
     }
 
 def collisionDetection(m):
@@ -115,7 +128,7 @@ def pointsCalculation(m):
     return m
 
 def timeUpDetection(m):
-    if time.time() - m['gameStartedAt'] > 60:
+    if time.time() - m['gameStartedAt'] > m['gameDuration']:
         m['stop'] = True
     return m        
 
@@ -286,6 +299,7 @@ def obstacleAdvance(position):
 def updateByGameStart(m):
     m['gameStartedAt'] = time.time()
     m['stop'] = False
+    m['points'] = 0
     return m
 
 # Update the model at game end
@@ -293,12 +307,12 @@ def updateByGameEnd(m):
     if m['points'] > m['highScore']:
         m['highScore'] = m['points']
     m['gameCounter'] = m['gameCounter'] + 1
-    m['message'] = getMessage(m['language'], 'points') + ' ' + str(m['points'])
+    m['message'] = getMessage(m['displayWidth'], m['language'], 'points') + ' ' + str(m['points'])
     return m
 
 # Update the High score message
 def updateHighScoreMessage(m):
-    m['message'] = getMessage(m['language'], 'highscore') + ' ' + str(m['highScore'])
+    m['message'] = getMessage(m['displayWidth'], m['language'], 'highscore') + ' ' + str(m['highScore'])
     return m
 
 # Update the model based because time passed
@@ -359,13 +373,22 @@ try:
     b.enterTtyModeWithPath()
     b.acceptKeys(brlapi.rangeType_all,[0])
 
+    currentDateTime = datetime.datetime.now()
+
+    # Supprise
+    if currentDateTime.month == 5:
+        # Happy birthday
+        model = init(b)
+        model['message'] = getMessage(model['displayWidth'], model['language'], 'birthday')
+        view(b, model)
+        time.sleep(10)
+
     # The architecture
     model = init(b)
     view(b, model)
     delay = 0.1 # seconds
-    gameDuration = 60 # seconds
     waitForKeyPress = True
-    for _ in range(0, 5):
+    for _ in range(0, 3):
         key =  b.readKey(waitForKeyPress)
         model = updateByGameStart(model)
         while not model['stop']:
