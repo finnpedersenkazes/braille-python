@@ -12,7 +12,7 @@ import os
 # Global values
 
 currentDateTime = datetime.datetime.now()
-logFileName = '/home/pi/Documents/' + currentDateTime.isoformat()[:16].replace(':','-') + '_log.txt'
+logFileName = currentDateTime.isoformat()[:16].replace(':','-') + '_log.txt'
 
 # Helper functions to print debug information to the log
 
@@ -36,7 +36,7 @@ def printDiagnostics(brl):
 
 def printLog(m):
     os.system('clear')
-    
+
     if m['counter'] == 0:
         printProperty("LOG", 'Program Initialized')
         printProperty("Counter", str(m['counter']))
@@ -107,7 +107,7 @@ def init(brl):
     else:
         pointBlocks = 1
     language = 'en' # or 'fr'
-    
+
     return {
         'cursorPos': 0, # 0..3
         'obstaclePos': 9, # 0..4
@@ -148,7 +148,7 @@ def pointsCalculation(m):
 def timeUpDetection(m):
     if time.time() - m['gameStartedAt'] > m['gameDuration']:
         m['stop'] = True
-    return m        
+    return m
 
 def tens(i):
     i = i % 100
@@ -185,14 +185,14 @@ def digitDots(i):
         dots = brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5| brlapi.DOT6
     else:
         dots = 0
-    
+
     return dots
 
 def helper(m):
     # fullCell = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6 | brlapi.DOT7 | brlapi.DOT8
     cells = []
 
-    # Calculated cursor dots    
+    # Calculated cursor dots
     cursorDots = 0
     if m['cursorPos'] == 0:
         cursorDots = brlapi.DOT7 | brlapi.DOT8
@@ -206,17 +206,17 @@ def helper(m):
     # Calculate moving obstacles
     # for cells in range(0, 30) 40 cells display
     # for cells in range(0, 15) 20 cells display
-   
+
     for i in range(0, m['gameBlocks']):
         cell00 = 0
         cell01 = 0
         cell02 = 0
         cell03 = 0
         cell04 = 0
-        
+
         if i == 0:
             cell01 = cursorDots
-        
+
         if m['obstaclePos'] == 0:
             cell00 = brlapi.DOT3 | brlapi.DOT7
             cell04 = brlapi.DOT6 | brlapi.DOT8
@@ -246,14 +246,14 @@ def helper(m):
         if (i == 0) and m['collision']:
             if (m['counter'] % 2 == 0):
                 cell00 = brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT8
-            else:            
+            else:
                 cell00 = brlapi.DOT2 | brlapi.DOT7 | brlapi.DOT4 | brlapi.DOT6
             cell01 = cell00
             cell02 = cell00
             cell03 = cell00
             cell04 = cell00
 
-        # Display moving obstacles and player in position 1 
+        # Display moving obstacles and player in position 1
         cells.append(cell00)
         cells.append(cell01)
         cells.append(cell02)
@@ -261,7 +261,7 @@ def helper(m):
         cells.append(cell04)
 
     # Display score
-    # for cells in range(30, 40): 
+    # for cells in range(30, 40):
     cells.append(brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4) # p
     if m['pointBlocks'] > 1:
         cells.append(brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 ) # o
@@ -270,12 +270,12 @@ def helper(m):
         cells.append(brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5) # t
         cells.append(brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4) # s
     cells.append(brlapi.DOT2 | brlapi.DOT5) # :
-    
+
     # Display number of points. French system
     cells.append(brlapi.DOT6) # Number coming
     cells.append(digitDots(tens(m['points']))) # 0
     cells.append(digitDots(units(m['points']))) # 0
-    
+
     printProperty('cells', str(cells))
 
     return bytes(cells)
@@ -287,7 +287,7 @@ def view(brl, m):
         brl.writeText(m['message'])
     else:
         brl.writeDots(helper(m))
-            
+
 
 def cursorUp(position):
     # Legal positions: 0..3, blocked
@@ -336,7 +336,7 @@ def updateHighScoreMessage(m):
 # Update the model based because time passed
 def updateByTime(m):
     m['message'] = "Time flies when you are having fun"
-    
+
     m['counter'] = m['counter'] + 1
     if m['counter'] % 2 == 0:
         m['obstaclePos'] = obstacleAdvance(m['obstaclePos'])
@@ -344,7 +344,7 @@ def updateByTime(m):
         m = pointsCalculation(m)
     if m['obstaclePos'] == 1:
         m['cursorPos'] = 0
-    
+
     m = timeUpDetection(m)
     return m
 
@@ -379,7 +379,7 @@ def updateByKey(brl, m, keyCode):
             m['cursorPos'] = cursorUp(m['cursorPos'])
     else:
         m['message'] = "Unknown key"
-           
+
     m = collisionDetection(m)
     m = timeUpDetection(m)
     return m
@@ -421,7 +421,7 @@ try:
         model = updateByGameEnd(model)
         view(b, model)
         time.sleep(10)
-       
+
     model = updateHighScoreMessage(model)
     view(b, model)
     time.sleep(10)
