@@ -7,6 +7,7 @@ import louis
 import errno
 import time
 import datetime
+import os
 
  
 def formatTimeStamp(dateTime):
@@ -15,7 +16,10 @@ def formatTimeStamp(dateTime):
 # Global values
 
 currentDateTime = datetime.datetime.now()
-logFileName = '/home/pi/Documents/'
+directory = os.getcwd()
+logFileName = directory + '/logs/'
+if not os.path.exists(logFileName): 
+    os.mkdir(logFileName)
 logFileName = logFileName + formatTimeStamp(currentDateTime) + '_log.txt'
 
 # Helper functions to print debug information to the log
