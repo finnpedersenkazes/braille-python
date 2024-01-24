@@ -1,29 +1,38 @@
 #!/bin/python3
 
 # This example fills the display with dots
-# 
+#
 
 import brlapi
 import time
 
 brl = brlapi.Connection()
-#brl.enterTtyMode(1)
+# brl.enterTtyMode(1)
 brl.enterTtyModeWithPath()
 
-(displayLength, displayHeight) = brl.displaySize 
+(displayLength, displayHeight) = brl.displaySize
 
-print('display size: %i x %i' %(displayLength, displayHeight))
-print('driver name: '+str(brl.driverName))
+print("display size: %i x %i" % (displayLength, displayHeight))
+print("driver name: " + str(brl.driverName))
 
 start = time.time()
 c = 0
-fullCell = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6 | brlapi.DOT7 | brlapi.DOT8
+fullCell = (
+    brlapi.DOT1
+    | brlapi.DOT2
+    | brlapi.DOT3
+    | brlapi.DOT4
+    | brlapi.DOT5
+    | brlapi.DOT6
+    | brlapi.DOT7
+    | brlapi.DOT8
+)
 cells = []
 for i in range(40):
     cells.append(fullCell)
 
 try:
-    while(c < 320):
+    while c < 320:
         t = time.time()
         timepassed = round(t - start)
         time.sleep(0.1)
@@ -41,20 +50,20 @@ try:
             dot = dot | brlapi.DOT6
         elif c % 8 == 6:
             dot = dot | brlapi.DOT5
-        else: # c % 8 == 7:
+        else:  # c % 8 == 7:
             dot = dot | brlapi.DOT4
 
         cells = []
         for i in range(40):
             if c // 8 == i:
                 cells.append(dot)
-            else: 
+            else:
                 if i * 8 < c:
                     cells.append(fullCell)
                 else:
                     cells.append(0)
-                
-        print('c: %s, dot: %s, time: %s seconds' %(str(c), str(dot), str(timepassed)))
+
+        print("c: %s, dot: %s, time: %s seconds" % (str(c), str(dot), str(timepassed)))
 
         brl.writeDots(bytes(cells))
 

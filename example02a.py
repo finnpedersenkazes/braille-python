@@ -7,16 +7,16 @@ import time
 
 brl = brlapi.Connection()
 brl.enterTtyModeWithPath()
-print('display size: ' + str(brl.displaySize))
-print('driver name: '+str(brl.driverName))
+print("display size: " + str(brl.displaySize))
+print("driver name: " + str(brl.driverName))
 
 t = time.time()
 c = 0
 try:
-    while(c <= 100):
+    while c <= 100:
         c = c + 1
         time.sleep(0.1)
-        brl.writeText('counter: %c' %(c))
+        brl.writeText("counter: %c" % (c))
 
 except Exception as e:
     print(e)
