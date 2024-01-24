@@ -1,7 +1,7 @@
 #!/bin/python3
 
 # This example shows a traveling dot.
-# 
+#
 
 import brlapi
 import time
@@ -9,10 +9,10 @@ import time
 brl = brlapi.Connection()
 brl.enterTtyModeWithPath()
 
-(displayLength, displayHeight) = brl.displaySize 
+(displayLength, displayHeight) = brl.displaySize
 
-print('display size: %i x %i' %(displayLength, displayHeight))
-print('driver name: '+str(brl.driverName))
+print("display size: %i x %i" % (displayLength, displayHeight))
+print("driver name: " + str(brl.driverName))
 
 start = time.time()
 c = 0
@@ -22,7 +22,7 @@ for i in range(40):
     cells.append(dot)
 
 try:
-    while(c < 320):
+    while c < 320:
         t = time.time()
         timepassed = round(t - start)
         time.sleep(0.1)
@@ -40,7 +40,7 @@ try:
             dot = brlapi.DOT6
         elif c % 8 == 6:
             dot = brlapi.DOT5
-        else: # c % 8 == 7:
+        else:  # c % 8 == 7:
             dot = brlapi.DOT4
 
         cells = []
@@ -49,8 +49,8 @@ try:
                 cells.append(dot)
             else:
                 cells.append(0)
-                
-        print('c: %s, dot: %s, time: %s' %(str(c), str(dot), str(timepassed)))
+
+        print("c: %s, dot: %s, time: %s" % (str(c), str(dot), str(timepassed)))
 
         brl.writeDots(bytes(cells))
 
