@@ -14,8 +14,7 @@ import louis
 # Global values
 
 currentDateTime = datetime.datetime.now()
-logFileName = '/home/pi/Documents/' +
-    currentDateTime.isoformat()[:16].replace(':', '-') + '_log.txt'
+logFileName = '/home/finn/Documents/' + currentDateTime.isoformat()[:16].replace(':', '-') + '_log.txt'
 
 # Helper functions to print debug information to the log
 
@@ -500,4 +499,4 @@ except brlapi.ConnectionError as e:
     printProperty('error', str(e))
     printProperty('error.brlerrno', str(e.brlerrno))
     printProperty('error.libcerrno', str(e.libcerrno))
-    
+
