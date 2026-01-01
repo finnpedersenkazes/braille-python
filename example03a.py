@@ -78,7 +78,7 @@ def getMessage(displayWidth, language, code):
     if code == "start":
         if language == "fr":
             if displayWidth <= 20:
-                message = "Youche une touche"
+                message = "Touche une touche"
             else:
                 message = "Appuyez sur une touche"
         else:

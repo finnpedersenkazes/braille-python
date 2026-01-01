@@ -16,7 +16,7 @@ def formatTimeStamp(dateTime):
 # Global values
 
 currentDateTime = datetime.datetime.now()
-logFileName = "/home/pi/Documents/"
+logFileName = "/home/finn/Documents/"
 logFileName = logFileName + formatTimeStamp(currentDateTime) + "_log.txt"
 
 # Helper functions to print debug information to the log
