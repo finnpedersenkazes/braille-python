@@ -1,29 +1,121 @@
-# Braille Display and Raspberry Pi
+# Braille Display and Linux
 
 Being blind and using IT can be quite a challenge. But it is also an opportunity.
 
-The intension with this project is to challenge the idea that braille solutions have to be expensive and for the few. Would it be possible to make games and applications for older braille displays at a relatively low cost? Would it be possible for students using Python to write these solutions?
+The intention with this project is to challenge the idea that braille solutions have to be expensive and for the few. Would it be possible to make games and applications for older braille displays at a relatively low cost? Would it be possible for students using Python to write these solutions?
 
 ## BrlAPI
 
-I have just discovered BrlAPI and BrlTTY.
+This solution is based on BrlAPI and BrlTTY.
 
 https://brltty.app/
+
+
+### Installation 
+
+#### Raspberry Pi OS
+
+Install the required packages:
+
+```bash
+sudo apt update
+sudo apt install brltty python3-brlapi python3-louis
+```
+
+Ensure BRLTTY is running:
+
+```bash
+sudo systemctl enable brltty
+sudo systemctl start brltty
+```
+
+Verify the installation:
+
+```bash
+brltty -v
+python3 -c "import brlapi; import louis; print('Packages installed successfully')"
+```
+
+**Note:** You may need to add your user to the `brltty` or `dialout` group to access the braille display:
+
+```bash
+sudo usermod -a -G brltty $USER
+```
+
+After adding yourself to the group, log out and log back in for the changes to take effect.
+
+#### Ubuntu
+
+Install the required packages:
+
+```bash
+sudo apt update
+sudo apt install brltty python3-brlapi python3-louis
+```
+
+Ensure BRLTTY is running:
+
+```bash
+sudo systemctl enable brltty
+sudo systemctl start brltty
+```
+
+Verify the installation:
+
+```bash
+brltty -v
+python3 -c "import brlapi; import louis; print('Packages installed successfully')"
+```
+
+**Note:** You may need to add your user to the `brltty` or `dialout` group to access the braille display:
+
+```bash
+sudo usermod -a -G brltty $USER
+```
+
+After adding yourself to the group, log out and log back in for the changes to take effect.
+
+For more detailed configuration instructions, visit the [BRLTTY documentation](https://brltty.app/doc/). 
+
+
 
 ## Equipment
 
 Braille displays have been around for some time.
-They become more and more capable, but they are expense.
+They become more and more capable, but they are expensive.
 
 
-The esytime Evolution is a 6.900 € windows computer with a braille keyboard and display.
+### B.Book
 
-The Brailliant BI 20X braille display has a SD card and some application capabilities like taking notes and a simple calculator. 2.700 €.
+[eurobraille](https://www.eurobraille.com/product/note-taker-computer-b-book-32-cells/)
+
+B.Book is a notetaker, a Braille computer and a Braille display, all-in-one, compact and autonomous.
+
+The price is about 6.000 €. 
+
+It replaces the earlier model the esytime Evolution which had a price tag of 6.900 €. 
+
+
+### Brailliant BI 20X
+
+[HumanWare](https://store.humanware.com/int/brailliant-bi-20x-braille-display.html)
+
+The Brailliant BI 20X braille display has a SD card and some application capabilities like taking notes and a simple calculator. 3.000 €.
+
+
+### Focus Blue 40
+
+[Freedom Scientific](https://shop.vispero.com/collections/braille-displays)
 
 The Focus Blue 40. 4th Gen. has no SD card or applications.
 I paid 1500 € for a demo model. It is an older model, but quite robust.
 
-This is expensive equipment, with few capabilities and quite closed applications.
+- Focus 14 Blue 5th Gen costs 1400 €
+- Focus 40 Blue 5th Gen costs 3200 €
+- Focus 80 Blue 5th Gen costs 8500 €
+
+
+This is expensive equipment, with few capabilities and quite closed application ecosystems.
 
 ## The project
 
@@ -64,7 +156,7 @@ With a boilerplate like this, many developers would be able to write application
 
 **The benefits are many**
 
-- I hope to help blind people, especially kids, but giving them access to fun games, education, books, educational tools, teaching them programming and much more.
+- I hope to help blind people, especially kids, by giving them access to fun games, education, books, educational tools, teaching them programming and much more.
 
 - I hope to give new life to older braille displays, that currently only can be used with VoiceOver and Jaws. This would give these old displays functionality like note taking, calculator, games and more
 
