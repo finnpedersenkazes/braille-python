@@ -22,18 +22,21 @@ sudo apt update
 sudo apt install brltty python3-brlapi python3-louis
 ```
 
-Ensure BRLTTY is running:
+Ensure BRLTTY starts automatically on boot and is running:
 
 ```bash
-sudo systemctl enable brltty
-sudo systemctl start brltty
+sudo systemctl enable brltty  # Enable to start automatically on boot
+sudo systemctl start brltty   # Start the service now
 ```
+
+**Important:** The `enable` command ensures BRLTTY starts automatically whenever the computer boots or reboots. This is essential for automatic operation without manual intervention.
 
 Verify the installation:
 
 ```bash
 brltty -v
 python3 -c "import brlapi; import louis; print('Packages installed successfully')"
+systemctl status brltty
 ```
 
 **Note:** You may need to add your user to the `brltty` or `dialout` group to access the braille display:
@@ -44,7 +47,9 @@ sudo usermod -a -G brltty $USER
 
 After adding yourself to the group, log out and log back in for the changes to take effect.
 
-#### Ubuntu
+**Configuration:** BRLTTY will automatically detect most braille displays. If you need to configure a specific device, edit `/etc/brltty.conf`. See the [BRLTTY Guidelines](https://brltty.app/guidelines.html) for distribution-specific configuration details.
+
+#### Ubuntu 
 
 Install the required packages:
 
@@ -53,18 +58,21 @@ sudo apt update
 sudo apt install brltty python3-brlapi python3-louis
 ```
 
-Ensure BRLTTY is running:
+Ensure BRLTTY starts automatically on boot and is running:
 
 ```bash
-sudo systemctl enable brltty
-sudo systemctl start brltty
+sudo systemctl enable brltty  # Enable to start automatically on boot
+sudo systemctl start brltty   # Start the service now
 ```
+
+**Important:** The `enable` command ensures BRLTTY starts automatically whenever the computer boots or reboots. This is essential for automatic operation without manual intervention.
 
 Verify the installation:
 
 ```bash
 brltty -v
 python3 -c "import brlapi; import louis; print('Packages installed successfully')"
+systemctl status brltty
 ```
 
 **Note:** You may need to add your user to the `brltty` or `dialout` group to access the braille display:
@@ -75,7 +83,13 @@ sudo usermod -a -G brltty $USER
 
 After adding yourself to the group, log out and log back in for the changes to take effect.
 
-For more detailed configuration instructions, visit the [BRLTTY documentation](https://brltty.app/doc/). 
+**Configuration:** BRLTTY will automatically detect most braille displays. If you need to configure a specific device, edit `/etc/brltty.conf`. See the [BRLTTY Guidelines](https://brltty.app/guidelines.html) for distribution-specific configuration details.
+
+**Additional Resources:**
+- [BRLTTY Official Website](https://brltty.app/)
+- [BRLTTY Documentation](https://brltty.app/doc/)
+- [BRLTTY Guidelines for Linux Distributions](https://brltty.app/guidelines.html)
+- [BRLTTY Reference Manual](https://brltty.app/doc/Manual-BRLTTY/English/BRLTTY.html) 
 
 
 
@@ -113,6 +127,10 @@ I paid 1500 € for a demo model. It is an older model, but quite robust.
 - Focus 14 Blue 5th Gen costs 1400 €
 - Focus 40 Blue 5th Gen costs 3200 €
 - Focus 80 Blue 5th Gen costs 8500 €
+
+[User's Guide](https://support.freedomscientific.com/Content/Documents/Manuals/Focus/Focus40Blue/Focus-40-Blue-Online-Users-Guide.htm)
+
+[Updating the Focus Blue Firmware](https://support.freedomscientific.com/Downloads/Focus/Focus4Downloads)
 
 
 This is expensive equipment, with few capabilities and quite closed application ecosystems.

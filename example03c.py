@@ -6,6 +6,7 @@ import brlapi
 import errno
 import time
 import datetime
+import os
 import louis
 
 
@@ -16,8 +17,9 @@ def formatTimeStamp(dateTime):
 # Global values
 
 currentDateTime = datetime.datetime.now()
-logFileName = "/home/finn/Documents/"
-logFileName = logFileName + formatTimeStamp(currentDateTime) + "_log.txt"
+logDir = os.path.join(os.path.expanduser("~"), "Documents")
+os.makedirs(logDir, exist_ok=True)
+logFileName = os.path.join(logDir, formatTimeStamp(currentDateTime) + "_log.txt")
 
 # Helper functions to print debug information to the log
 
@@ -64,13 +66,14 @@ def textToDots(text):
 
 
 def dotsToDisplaySize(dots, size):
+    dotsLength = len(dots)
     cells = []
     for i in range(0, size):  # it must be the length of the display
-        if i < size:
+        if i < dotsLength:
             cells.append(dots[i])
         else:
             cells.append(0)
-    return cells
+    return bytes(cells)
 
 
 def messageToDisplay(m):
@@ -367,6 +370,9 @@ def gameToDots(m):
 # Visualize the model on the braille displan
 def view(brl, m):
     printLog(m)
+    if m["displayWidth"] == 0:
+        print("Warning: No braille display detected. Skipping writeDots.")
+        return
     if (m["counter"] == 0) or m["stop"]:
         brl.writeDots(messageToDisplay(m))
         # brl.writeText()
