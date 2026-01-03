@@ -25,38 +25,38 @@ def main():
 
     try:
         while c < displayLength * 8:
-        t = time.time()
-        timepassed = round(t - start)
-        time.sleep(0.1)
-        if c % 8 == 0:
-            dot = brlapi.DOT1
-        elif c % 8 == 1:
-            dot = brlapi.DOT2
-        elif c % 8 == 2:
-            dot = brlapi.DOT3
-        elif c % 8 == 3:
-            dot = brlapi.DOT7
-        elif c % 8 == 4:
-            dot = brlapi.DOT8
-        elif c % 8 == 5:
-            dot = brlapi.DOT6
-        elif c % 8 == 6:
-            dot = brlapi.DOT5
-        else:  # c % 8 == 7:
-            dot = brlapi.DOT4
+            t = time.time()
+            timepassed = round(t - start)
+            time.sleep(0.1)
+            if c % 8 == 0:
+                dot = brlapi.DOT1
+            elif c % 8 == 1:
+                dot = brlapi.DOT2
+            elif c % 8 == 2:
+                dot = brlapi.DOT3
+            elif c % 8 == 3:
+                dot = brlapi.DOT7
+            elif c % 8 == 4:
+                dot = brlapi.DOT8
+            elif c % 8 == 5:
+                dot = brlapi.DOT6
+            elif c % 8 == 6:
+                dot = brlapi.DOT5
+            else:  # c % 8 == 7:
+                dot = brlapi.DOT4
 
-        cells = []
-        for i in range(displayLength):
-            if c // 8 == i:
-                cells.append(dot)
-            else:
-                cells.append(0)
+            cells = []
+            for i in range(displayLength):
+                if c // 8 == i:
+                    cells.append(dot)
+                else:
+                    cells.append(0)
 
-        print("c: %s, dot: %s, time: %s" % (str(c), str(dot), str(timepassed)))
+            print("c: %s, dot: %s, time: %s" % (str(c), str(dot), str(timepassed)))
 
-        brl.writeDots(bytes(cells))
+            brl.writeDots(bytes(cells))
 
-        c = c + 1
+            c = c + 1
 
     except Exception as e:
         print(e)

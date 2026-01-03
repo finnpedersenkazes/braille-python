@@ -76,39 +76,45 @@ def update(m, keyCode):
     return m
 
 
-try:
-    # Connection and Initialization
-    b = brlapi.Connection()
-    # b.enterTtyMode(1)
-    b.enterTtyModeWithPath()
-    b.acceptKeys(brlapi.rangeType_all, [0])
+def main():
+    global b
+    try:
+        # Connection and Initialization
+        b = brlapi.Connection()
+        # b.enterTtyMode(1)
+        b.enterTtyModeWithPath()
+        b.acceptKeys(brlapi.rangeType_all, [0])
 
-    # The architecture
-    model = init()
-    while model["counter"] < 20:
-        view(model)
-        key = b.readKey()
-        model = update(model, key)
+        # The architecture
+        model = init()
+        while model["counter"] < 20:
+            view(model)
+            key = b.readKey()
+            model = update(model, key)
 
-    # Close the connection
-    b.leaveTtyMode()
-    b.closeConnection()
+        # Close the connection
+        b.leaveTtyMode()
+        b.closeConnection()
 
-# Error Handling
-except brlapi.ConnectionError as e:
-    if e.brlerrno == brlapi.ERROR_CONNREFUSED:
-        print("Connection to %s refused. BRLTTY is too busy..." % (e.host))
-    elif e.brlerrno == brlapi.ERROR_AUTHENTICATION:
-        print(
-            "Authentication with %s failed. Please check the permissions of %s"
-            % (e.host, e.auth)
-        )
-    elif e.brlerrno == brlapi.ERROR_LIBCERR and (
-        e.libcerrno == errno.ECONNREFUSED or e.libcerrno == errno.ENOENT
-    ):
-        print("Connection to %s failed. Is BRLTTY really running?" % (e.host))
-    else:
-        print("Connection to BRLTTY at %s failed: " % (e.host))
-    print(e)
-    print(e.brlerrno)
-    print(e.libcerrno)
+    # Error Handling
+    except brlapi.ConnectionError as e:
+        if e.brlerrno == brlapi.ERROR_CONNREFUSED:
+            print("Connection to %s refused. BRLTTY is too busy..." % (e.host))
+        elif e.brlerrno == brlapi.ERROR_AUTHENTICATION:
+            print(
+                "Authentication with %s failed. Please check the permissions of %s"
+                % (e.host, e.auth)
+            )
+        elif e.brlerrno == brlapi.ERROR_LIBCERR and (
+            e.libcerrno == errno.ECONNREFUSED or e.libcerrno == errno.ENOENT
+        ):
+            print("Connection to %s failed. Is BRLTTY really running?" % (e.host))
+        else:
+            print("Connection to BRLTTY at %s failed: " % (e.host))
+        print(e)
+        print(e.brlerrno)
+        print(e.libcerrno)
+
+
+if __name__ == "__main__":
+    main()

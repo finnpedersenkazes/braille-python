@@ -372,61 +372,67 @@ def updateByKey(brl, m, keyCode):
     return m
 
 
-try:
-    printProperty("Initialization", "Before Connection")
-    # Initialization
-    b = brlapi.Connection()
-    b.enterTtyModeWithPath()
-    b.acceptKeys(brlapi.rangeType_all, [0])
-    printDiagnostics(b)
+# Main function
+def main():
+    try:
+        printProperty("Initialization", "Before Connection")
+        # Initialization
+        b = brlapi.Connection()
+        b.enterTtyModeWithPath()
+        b.acceptKeys(brlapi.rangeType_all, [0])
+        printDiagnostics(b)
 
-    # The architecture
-    model = init(b)
-    view(b, model)
-    waitForKeyPress = True
-    while not model["stopProgram"]:
-        key = b.readKey(not waitForKeyPress)
-        if not key:
-            model = updateByTime(model)
+        # The architecture
+        model = init(b)
+        view(b, model)
+        waitForKeyPress = True
+        while not model["stopProgram"]:
+            key = b.readKey(not waitForKeyPress)
+            if not key:
+                model = updateByTime(model)
+            else:
+                model = updateByKey(b, model, key)
+
+            if model["modelChanged"]:
+                model["modelChanged"] = False
+                view(b, model)
+
+        model = updateBeforeLeaving(model)
+        view(b, model)
+        key = b.readKey(waitForKeyPress)
+
+        b.leaveTtyMode()
+        b.closeConnection()
+
+    # Error Handling
+    except brlapi.ConnectionError as e:
+        if e.brlerrno == brlapi.ERROR_CONNREFUSED:
+            printProperty(
+                "Connection refused",
+                "Connection to %s refused. BRLTTY is too busy..." % (e.host),
+            )
+        elif e.brlerrno == brlapi.ERROR_AUTHENTICATION:
+            printProperty(
+                "Authentication failed.",
+                "Authentication with %s failed. Please check the permissions of %s"
+                % (e.host, e.auth),
+            )
+        elif e.brlerrno == brlapi.ERROR_LIBCERR and (
+            e.libcerrno == errno.ECONNREFUSED or e.libcerrno == errno.ENOENT
+        ):
+            printProperty(
+                "Connection failed",
+                "Connection to %s failed. Is BRLTTY really running?" % (e.host),
+            )
         else:
-            model = updateByKey(b, model, key)
+            printProperty(
+                "Connection to BRLTTY failed",
+                "Connection to BRLTTY at %s failed: " % (e.host),
+            )
+        printProperty("error", str(e))
+        printProperty("error.brlerrno", str(e.brlerrno))
+        printProperty("error.libcerrno", str(e.libcerrno))
 
-        if model["modelChanged"]:
-            model["modelChanged"] = False
-            view(b, model)
 
-    model = updateBeforeLeaving(model)
-    view(b, model)
-    key = b.readKey(waitForKeyPress)
-
-    b.leaveTtyMode()
-    b.closeConnection()
-
-# Error Handling
-except brlapi.ConnectionError as e:
-    if e.brlerrno == brlapi.ERROR_CONNREFUSED:
-        printProperty(
-            "Connection refused",
-            "Connection to %s refused. BRLTTY is too busy..." % (e.host),
-        )
-    elif e.brlerrno == brlapi.ERROR_AUTHENTICATION:
-        printProperty(
-            "Authentication failed.",
-            "Authentication with %s failed. Please check the permissions of %s"
-            % (e.host, e.auth),
-        )
-    elif e.brlerrno == brlapi.ERROR_LIBCERR and (
-        e.libcerrno == errno.ECONNREFUSED or e.libcerrno == errno.ENOENT
-    ):
-        printProperty(
-            "Connection failed",
-            "Connection to %s failed. Is BRLTTY really running?" % (e.host),
-        )
-    else:
-        printProperty(
-            "Connection to BRLTTY failed",
-            "Connection to BRLTTY at %s failed: " % (e.host),
-        )
-    printProperty("error", str(e))
-    printProperty("error.brlerrno", str(e.brlerrno))
-    printProperty("error.libcerrno", str(e.libcerrno))
+if __name__ == "__main__":
+    main()
