@@ -54,16 +54,31 @@ Quick start for Ubuntu/Raspberry Pi OS:
 
 ```bash
 sudo apt update
-sudo apt install brltty python3-brlapi python3-louis
+sudo apt install brltty python3-brlapi python3-louis python3-venv
+```
+
+**Note:** `python3-brlapi` and `python3-louis` are system packages and are not available via pip.
+
+### Python Environment Setup
+
+Create a virtual environment with access to system packages (required for brlapi and louis):
+
+```bash
+python3 -m venv .venv --system-site-packages
+source .venv/bin/activate  # On Linux/Mac
 ```
 
 ### Python Dependencies
 
-Install development dependencies:
+Install Python dependencies from requirements.txt:
 
 ```bash
 pip install -r requirements.txt
 ```
+
+This will install:
+- `python-xlib` - Required for keyboard input handling
+- `pytest` - For running tests
 
 Or install with development dependencies:
 
@@ -103,7 +118,7 @@ Install the required packages:
 
 ```bash
 sudo apt update
-sudo apt install brltty python3-brlapi python3-louis
+sudo apt install brltty python3-brlapi python3-louis python3-venv
 ```
 
 Ensure BRLTTY starts automatically on boot and is running:
@@ -139,7 +154,7 @@ Install the required packages:
 
 ```bash
 sudo apt update
-sudo apt install brltty python3-brlapi python3-louis
+sudo apt install brltty python3-brlapi python3-louis python3-venv
 ```
 
 Ensure BRLTTY starts automatically on boot and is running:
