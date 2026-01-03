@@ -1,84 +1,48 @@
 #!/usr/bin/env python3
 
 """
-Main entry point for the braille game
-Following Elm-like architecture with Model-Update-View pattern
+Main launcher for braille application examples
+Runs the selected example application
+
+Usage:
+    python src/main.py           # Runs example05 (default)
+    python src/main.py example05 # Runs example05
+    python src/main.py 03c       # Runs example03c
 """
 
-import brlapi
-import errno
-import time
-
-# Import from our Elm-like libraries
-from model import init, getMessage
-from library import (
-    printProperty,
-    printDiagnostics,
-    currentDateTime,
-    handleConnectionError,
-)
-from update import (
-    updateByGameStart,
-    updateByGameEnd,
-    updateHighScoreMessage,
-    updateByTime,
-    updateByKey,
-)
-from view import view
+import sys
+import os
 
 
 def main():
-    """Main game loop"""
+    """Launch the selected example"""
+    # Add examples directory to path
+    examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
+    sys.path.insert(0, examples_dir)
+    
+    # Default example to run
+    example_name = "example05"
+    
+    # Allow command line argument to specify which example to run
+    if len(sys.argv) > 1:
+        example_name = sys.argv[1]
+        # Allow shorthand like "05" or "3c" instead of full "example05"
+        if not example_name.startswith("example"):
+            example_name = "example" + example_name
+    
     try:
-        printProperty("Initialization", "Before Connection")
-        # Initialization
-        b = brlapi.Connection()
-        b.enterTtyModeWithPath()
-        b.acceptKeys(brlapi.rangeType_all, [0])
-        printDiagnostics(b)
-
-        # Surprise
-        if currentDateTime.month == 5:
-            # Happy birthday
-            model = init(b)
-            model["message"] = getMessage(
-                model["displayWidth"], model["language"], "birthday"
-            )
-            view(b, model)
-            time.sleep(10)
-
-        # The architecture
-        model = init(b)
-        view(b, model)
-        delay = 0.1  # seconds
-        waitForKeyPress = True
-        for _ in range(0, 1):  # TODO change to 3
-            key = b.readKey(waitForKeyPress)
-            model = updateByGameStart(model)
-            while not model["stop"]:
-                key = b.readKey(not waitForKeyPress)
-                if not key:
-                    time.sleep(delay)
-                    model = updateByTime(model)
-                else:
-                    model = updateByKey(b, model, key)
-
-                view(b, model)
-
-            model = updateByGameEnd(model)
-            view(b, model)
-            time.sleep(10)
-
-        model = updateHighScoreMessage(model)
-        view(b, model)
-        time.sleep(10)
-
-        b.leaveTtyMode()
-        b.closeConnection()
-
-    # Error Handling
-    except brlapi.ConnectionError as e:
-        handleConnectionError(e)
+        # Import and run the selected example
+        print(f"Running {example_name}...")
+        example_module = __import__(example_name)
+        example_module.main()
+    except ImportError as e:
+        print(f"Error: Could not import {example_name}")
+        print(f"Make sure the file examples/{example_name}.py exists")
+        print(f"Details: {e}")
+        sys.exit(1)
+    except AttributeError:
+        print(f"Error: {example_name}.py does not have a main() function")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
