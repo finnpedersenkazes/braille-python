@@ -4,14 +4,98 @@ Being blind and using IT can be quite a challenge. But it is also an opportunity
 
 The intention with this project is to challenge the idea that braille solutions have to be expensive and for the few. Would it be possible to make games and applications for older braille displays at a relatively low cost? Would it be possible for students using Python to write these solutions?
 
+## Project Structure
+
+```
+.
+├── src/                    # Main library source code
+│   └── __init__.py
+├── examples/               # Example scripts demonstrating usage
+│   ├── example01.py
+│   ├── example01a.py
+│   ├── example01b.py
+│   ├── example02.py
+│   ├── example02a.py
+│   ├── example02b.py
+│   ├── example02c.py
+│   ├── example03.py
+│   ├── example03a.py
+│   ├── example03b.py
+│   ├── example03c.py
+│   ├── example03d.py
+│   └── example04a.py
+├── scripts/                # Utility scripts
+│   ├── diagnostics.py
+│   ├── setup_braille_display.sh
+│   └── fix_brltty_installation.sh
+├── tests/                  # Unit tests
+│   └── __init__.py
+├── docs/                   # Documentation
+│   ├── Installation.md
+│   └── BI 20X EN-UG 1.1.1.md
+├── requirements.txt        # Project dependencies
+├── pyproject.toml         # Modern Python project configuration
+└── README.md              # This file
+```
+
 ## BrlAPI
 
 This solution is based on BrlAPI and BrlTTY.
 
 https://brltty.app/
 
+## Setup
 
-### Installation 
+### System Dependencies
+
+See [docs/Installation.md](docs/Installation.md) for detailed installation instructions for different Linux distributions.
+
+Quick start for Ubuntu/Raspberry Pi OS:
+
+```bash
+sudo apt update
+sudo apt install brltty python3-brlapi python3-louis
+```
+
+### Python Dependencies
+
+Install development dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Or install with development dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+### Running the Examples
+
+Run example scripts from the project root:
+
+```bash
+python examples/example01.py
+```
+
+### Running Utilities
+
+Use the diagnostic script to check your braille display setup:
+
+```bash
+python scripts/diagnostics.py
+```
+
+Use the setup script to configure your braille display:
+
+```bash
+bash scripts/setup_braille_display.sh
+```
+
+## System Installation
+
+For detailed system-level installation and configuration instructions, see [docs/Installation.md](docs/Installation.md).
 
 #### Raspberry Pi OS
 
