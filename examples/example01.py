@@ -1,75 +1,140 @@
 #!/usr/bin/env python3
 
+"""
+Example 01 - Keyboard Input with Diagnostics
+Demonstrates Elm architecture pattern (Model-Update-View)
+Reads keyboard input, displays key information, and captures typed text
+"""
+
 import brlapi
 import errno
 import Xlib.keysymdef.miscellany
 
 
+def writeProperty(name, value):
+    """Print a property in a structured format"""
+    print(f"{name}: {value}")
+
+
+def print_diagnostics(brl):
+    """Display braille display connection information"""
+    writeProperty("File Descriptor", str(brl.fileDescriptor))
+    writeProperty("Server Host", str(brl.host))
+    writeProperty("Authorization Schemes", str(brl.auth))
+    writeProperty("Driver Name", str(brl.driverName))
+    writeProperty("Model Identifier", str(brl.modelIdentifier))
+    writeProperty("Display Width", str(brl.displaySize[0]))
+    writeProperty("Display Height", str(brl.displaySize[1]))
+    writeProperty("-------", "-------------------------")
+
+
+def print_log(m):
+    """Log current model state"""
+    if m["counter"] == 0:
+        writeProperty("LOG", "Program Initialized")
+        writeProperty("Message", m["message"])
+    else:
+        writeProperty("LOG", f"Key Press #{m['counter']}")
+        writeProperty("Code", m["code"])
+        writeProperty("Type", hex(m["type"]))
+        writeProperty("Command", hex(m["command"]))
+        writeProperty("Argument", hex(m["argument"]))
+        writeProperty("Flags", hex(m["flags"]))
+        writeProperty("Message", m["message"])
+        writeProperty("Text", m["text"])
+    writeProperty("-------", "-------------------------")
+
+
+def init():
+    """Initialize the model (Elm architecture)"""
+    return {
+        "counter": 0,
+        "text": "",
+        "code": "",
+        "type": 0,
+        "command": 0,
+        "argument": 0,
+        "flags": 0,
+        "message": "Press a key (max 20 keypresses)..."
+    }
+
+
+def view(brl, m):
+    """Display the model on braille display (Elm architecture)"""
+    print_log(m)
+    if m["counter"] == 0:
+        brl.writeText(m["message"])
+    else:
+        brl.writeText(f"Count: {m['counter']}, {m['message']}, {m['text']}")
+
+
+def update(brl, m, keyCode):
+    """Update model based on key press (Elm architecture)"""
+    # Keep information about the key pressed in the model
+    k = brl.expandKeyCode(keyCode)
+    m["code"] = f"0x{keyCode:X}"
+    m["type"] = k["type"]
+    m["command"] = k["command"]
+    m["argument"] = k["argument"]
+    m["flags"] = k["flags"]
+    
+    # Capture text input
+    if m["type"] == 0:
+        m["text"] = m["text"] + chr(m["argument"])
+    
+    # Update counter and message
+    m["counter"] = m["counter"] + 1
+    
+    # Identify specific keys
+    if keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME:
+        m["message"] = "Home Button"
+    elif keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNUP:
+        m["message"] = "Line Up"
+    elif keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNDN:
+        m["message"] = "Line Down"
+    elif keyCode == brlapi.KEY_TYPE_SYM | Xlib.keysymdef.miscellany.XK_Tab:
+        m["message"] = "Tab"
+    else:
+        m["message"] = "Key pressed"
+    
+    return m
+
+
 def main():
     try:
+        # Connection and Initialization
         b = brlapi.Connection()
-        # b.enterTtyMode(1)
+        print_diagnostics(b)
         b.enterTtyModeWithPath()
-        b.ignoreKeys(brlapi.rangeType_all, [0])
 
-        # Accept the home, window up and window down braille commands
-        b.acceptKeys(
-            brlapi.rangeType_command,
-            [
-                brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME,
-                brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_WINUP,
-                brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_WINDN,
-            ],
-        )
+        # Elm Architecture: Model-Update-View loop
+        model = init()
+        while model["counter"] < 20:
+            view(b, model)
+            key = b.readKey()
+            if not key:
+                print("No key received")
+                continue
+            model = update(b, model, key)
 
-        # Accept the tab key
-        b.acceptKeys(
-            brlapi.rangeType_key, [brlapi.KEY_TYPE_SYM | Xlib.keysymdef.miscellany.XK_Tab]
-        )
-
-        b.writeText("Press home, winup/dn or tab to continue ...")
-        key = b.readKey()
-
-        k = b.expandKeyCode(key)
-        b.writeText(
-            "Key %ld (%x %x %x %x) !"
-            % (key, k["type"], k["command"], k["argument"], k["flags"])
-        )
-        b.writeText(None, 1)
-        b.readKey()
-
-        underline = chr(brlapi.DOT7 + brlapi.DOT8)
-        # Note: center() can take two arguments only starting from python 2.4
-        b.write(
-            regionBegin=1,
-            regionSize=40,
-            text="Press any key to exit                 ",
-            orMask="".center(21, underline) + "".center(19, chr(0)),
-        )
-
-        b.acceptKeys(brlapi.rangeType_all, [0])
-        b.readKey()
-
+        # Cleanup
         b.leaveTtyMode()
         b.closeConnection()
 
     except brlapi.ConnectionError as e:
         if e.brlerrno == brlapi.ERROR_CONNREFUSED:
-            print("Connection to %s refused. BRLTTY is too busy..." % (e.host))
+            print(f"Connection to {e.host} refused. BRLTTY is too busy...")
         elif e.brlerrno == brlapi.ERROR_AUTHENTICATION:
-            print(
-                "Authentication with %s failed. Please check the permissions of %s"
-                % (e.host, e.auth)
-            )
+            print(f"Authentication with {e.host} failed. Please check the permissions of {e.auth}")
         elif e.brlerrno == brlapi.ERROR_LIBCERR and (
             e.libcerrno == errno.ECONNREFUSED or e.libcerrno == errno.ENOENT
         ):
-            print("Connection to %s failed. Is BRLTTY really running?" % (e.host))
+            print(f"Connection to {e.host} failed. Is BRLTTY really running?")
         else:
-            print("Connection to BRLTTY at %s failed: " % (e.host))
+            print(f"Connection to BRLTTY at {e.host} failed: ")
         print(e)
-        print(e.brlerrno)
-        print(e.libcerrno)
+        print(f"Error number: {e.brlerrno}")
+        print(f"Lib error: {e.libcerrno}")
 
 
 if __name__ == "__main__":

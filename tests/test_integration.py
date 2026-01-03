@@ -30,9 +30,9 @@ class TestDevelopmentPlatform(unittest.TestCase):
         examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
         
         expected_files = [
-            'example01.py', 'example01a.py', 'example01b.py',
+            'example01.py',
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
-            'example04a.py', 'example05.py'
+            'example04.py', 'example05.py', 'example06.py'
         ]
         for filename in expected_files:
             filepath = os.path.join(examples_dir, filename)
@@ -75,32 +75,19 @@ class TestElmArchitecture(unittest.TestCase):
         for key in expected_keys:
             self.assertIn(key, model, f"Model should have '{key}' key")
 
-    def test_example01b_elm_architecture(self):
-        """Test example01b implements Elm architecture"""
-        import example01b
+    def test_example04_elm_architecture(self):
+        """Test example04 implements Elm architecture"""
+        import example04
         
         # Check for init, update, view pattern
-        self.assertTrue(hasattr(example01b, 'init'))
-        self.assertTrue(hasattr(example01b, 'update'))
-        self.assertTrue(hasattr(example01b, 'view'))
-        
-        # Test init returns a model
-        model = example01b.init()
-        self.assertIsInstance(model, dict)
-
-    def test_example04a_elm_architecture(self):
-        """Test example04a implements Elm architecture"""
-        import example04a
-        
-        # Check for init, update, view pattern
-        self.assertTrue(hasattr(example04a, 'init'))
-        self.assertTrue(hasattr(example04a, 'updateByKey'))
-        self.assertTrue(hasattr(example04a, 'view'))
+        self.assertTrue(hasattr(example04, 'init'))
+        self.assertTrue(hasattr(example04, 'updateByKey'))
+        self.assertTrue(hasattr(example04, 'view'))
         
         # Test init returns a model
         mock_brl = Mock()
         mock_brl.displaySize = (20, 1)
-        model = example04a.init(mock_brl)
+        model = example04.init(mock_brl)
         self.assertIsInstance(model, dict)
 
 
@@ -128,9 +115,9 @@ class TestConsistency(unittest.TestCase):
         """Test that all examples have shebang lines"""
         examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
         example_files = [
-            'example01.py', 'example01a.py', 'example01b.py',
+            'example01.py',
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
-            'example04a.py', 'example05.py'
+            'example04.py', 'example05.py', 'example06.py'
         ]
         
         for filename in example_files:
@@ -147,9 +134,9 @@ class TestConsistency(unittest.TestCase):
         """Test that all examples use if __name__ == '__main__' pattern"""
         examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
         example_files = [
-            'example01.py', 'example01a.py', 'example01b.py',
+            'example01.py',
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
-            'example04a.py', 'example05.py'
+            'example04.py', 'example05.py', 'example06.py'
         ]
         
         for filename in example_files:

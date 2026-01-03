@@ -270,3 +270,124 @@ def checkDisplayConnected(brl):
 def writeProperty(name, value):
     """Alternative name for printProperty (used in some examples)"""
     printProperty(name, value)
+
+
+# ============================================================================
+# Braille character utilities
+# ============================================================================
+
+def charToBrailleDots(char):
+    """
+    Convert a-z character to braille dot pattern (Grade 1 Braille)
+    Returns integer with bits set for dots 1-6
+    """
+    char = char.lower()
+    
+    # Braille alphabet mapping (dots 1-6)
+    braille_map = {
+        'a': brlapi.DOT1,
+        'b': brlapi.DOT1 | brlapi.DOT2,
+        'c': brlapi.DOT1 | brlapi.DOT4,
+        'd': brlapi.DOT1 | brlapi.DOT4 | brlapi.DOT5,
+        'e': brlapi.DOT1 | brlapi.DOT5,
+        'f': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT4,
+        'g': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5,
+        'h': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT5,
+        'i': brlapi.DOT2 | brlapi.DOT4,
+        'j': brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5,
+        'k': brlapi.DOT1 | brlapi.DOT3,
+        'l': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3,
+        'm': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4,
+        'n': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5,
+        'o': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5,
+        'p': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4,
+        'q': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5,
+        'r': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT5,
+        's': brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4,
+        't': brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5,
+        'u': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT6,
+        'v': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT6,
+        'w': brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6,
+        'x': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6,
+        'y': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6,
+        'z': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6,
+    }
+    
+    return braille_map.get(char, 0)
+
+
+def brailleDotsToChar(dots):
+    """
+    Convert braille dot pattern back to character (inverse of charToBrailleDots)
+    Returns the character or '?' if not found
+    """
+    # Reverse mapping
+    reverse_map = {
+        brlapi.DOT1: 'a',
+        brlapi.DOT1 | brlapi.DOT2: 'b',
+        brlapi.DOT1 | brlapi.DOT4: 'c',
+        brlapi.DOT1 | brlapi.DOT4 | brlapi.DOT5: 'd',
+        brlapi.DOT1 | brlapi.DOT5: 'e',
+        brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT4: 'f',
+        brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5: 'g',
+        brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT5: 'h',
+        brlapi.DOT2 | brlapi.DOT4: 'i',
+        brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5: 'j',
+        brlapi.DOT1 | brlapi.DOT3: 'k',
+        brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3: 'l',
+        brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4: 'm',
+        brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5: 'n',
+        brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5: 'o',
+        brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4: 'p',
+        brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5: 'q',
+        brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT5: 'r',
+        brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4: 's',
+        brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5: 't',
+        brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT6: 'u',
+        brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT6: 'v',
+        brlapi.DOT2 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6: 'w',
+        brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6: 'x',
+        brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6: 'y',
+        brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6: 'z',
+    }
+    
+    return reverse_map.get(dots, '?')
+
+
+def combineKeysToDots(dot_list):
+    """
+    Combine list of dot numbers (1-6) into braille dot pattern
+    Example: [1, 3, 4, 6] -> DOT1|DOT3|DOT4|DOT6
+    """
+    dots = 0
+    dot_map = {
+        1: brlapi.DOT1,
+        2: brlapi.DOT2,
+        3: brlapi.DOT3,
+        4: brlapi.DOT4,
+        5: brlapi.DOT5,
+        6: brlapi.DOT6,
+    }
+    
+    for dot_num in dot_list:
+        if dot_num in dot_map:
+            dots |= dot_map[dot_num]
+    
+    return dots
+
+
+# ============================================================================
+# Random utilities
+# ============================================================================
+
+def randomChar():
+    """Get a random lowercase letter a-z"""
+    import random
+    return random.choice('abcdefghijklmnopqrstuvwxyz')
+
+
+def randomPosition(max_position):
+    """Get a random position from 0 to max_position-1"""
+    import random
+    return random.randint(0, max_position - 1)
+

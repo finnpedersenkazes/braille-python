@@ -19,6 +19,11 @@ from library import (
     placeCursor,
     adjustDots,
     checkDisplayConnected,
+    charToBrailleDots,
+    brailleDotsToChar,
+    combineKeysToDots,
+    randomChar,
+    randomPosition,
 )
 
 
@@ -145,3 +150,84 @@ def test_check_display_connected():
     # Mock disconnected display (height = 0)
     brl.displaySize = (20, 0)
     assert checkDisplayConnected(brl) is False
+
+
+def test_char_to_braille_dots():
+    """Test character to braille dots conversion"""
+    import brlapi
+    
+    # Test lowercase letters
+    assert charToBrailleDots('a') == brlapi.DOT1
+    assert charToBrailleDots('b') == brlapi.DOT1 | brlapi.DOT2
+    assert charToBrailleDots('x') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6
+    assert charToBrailleDots('z') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6
+    
+    # Test uppercase (should convert to lowercase)
+    assert charToBrailleDots('A') == brlapi.DOT1
+    assert charToBrailleDots('Z') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6
+    
+    # Test invalid character
+    assert charToBrailleDots('1') == 0
+    assert charToBrailleDots('?') == 0
+
+
+def test_braille_dots_to_char():
+    """Test braille dots to character conversion"""
+    import brlapi
+    
+    # Test basic conversions
+    assert brailleDotsToChar(brlapi.DOT1) == 'a'
+    assert brailleDotsToChar(brlapi.DOT1 | brlapi.DOT2) == 'b'
+    assert brailleDotsToChar(brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6) == 'x'
+    
+    # Test invalid dots
+    assert brailleDotsToChar(0) == '?'
+    assert brailleDotsToChar(brlapi.DOT7 | brlapi.DOT8) == '?'
+
+
+def test_combine_keys_to_dots():
+    """Test combining dot numbers to braille pattern"""
+    import brlapi
+    
+    # Test single dot
+    assert combineKeysToDots([1]) == brlapi.DOT1
+    
+    # Test multiple dots
+    result = combineKeysToDots([1, 3, 4, 6])
+    expected = brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6
+    assert result == expected
+    
+    # Test all dots 1-6
+    result = combineKeysToDots([1, 2, 3, 4, 5, 6])
+    expected = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6
+    assert result == expected
+    
+    # Test empty list
+    assert combineKeysToDots([]) == 0
+    
+    # Test invalid dot numbers (should be ignored)
+    assert combineKeysToDots([1, 7, 8]) == brlapi.DOT1
+
+
+def test_random_char():
+    """Test random character generation"""
+    # Test it returns a lowercase letter
+    for _ in range(10):
+        char = randomChar()
+        assert len(char) == 1
+        assert char.islower()
+        assert char.isalpha()
+        assert 'a' <= char <= 'z'
+
+
+def test_random_position():
+    """Test random position generation"""
+    # Test it returns position in range
+    for _ in range(10):
+        pos = randomPosition(20)
+        assert 0 <= pos < 20
+        assert isinstance(pos, int)
+    
+    # Test with small max
+    pos = randomPosition(1)
+    assert pos == 0

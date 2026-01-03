@@ -1,4 +1,10 @@
-#!/bin/python
+#!/usr/bin/env python3
+
+"""
+Example 02 - Basic Text Display
+Demonstrates simple text output to braille display
+Displays "Hello World" message
+"""
 
 import brlapi
 import time

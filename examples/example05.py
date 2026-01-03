@@ -3,7 +3,6 @@
 """
 Example 05 - Jump over the obstacles game
 Demonstrates Elm-like architecture with Model-Update-View pattern
-Based on example03c.py
 """
 
 import brlapi
@@ -51,14 +50,6 @@ def getMessage(displayWidth, language, code):
             message = "Points :"
         else:
             message = "Points:"
-    elif code == "birthday":
-        if language == "fr":
-            if displayWidth > 19:
-                message = "Joyeux anniversaire"
-            else:
-                message = "Bon anniversaire"
-        else:
-            message = "Happy birthday"
     else:
         message = ""
     return message
@@ -396,16 +387,6 @@ def main():
         b.enterTtyModeWithPath()
         b.acceptKeys(brlapi.rangeType_all, [0])
         printDiagnostics(b)
-
-        # Surprise
-        if currentDateTime.month == 5:
-            # Happy birthday
-            model = init(b)
-            model["message"] = getMessage(
-                model["displayWidth"], model["language"], "birthday"
-            )
-            view(b, model)
-            time.sleep(10)
 
         # The architecture
         model = init(b)

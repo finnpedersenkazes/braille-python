@@ -1,7 +1,10 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
-# This example counts to 100 on the display. No key input.
-
+"""
+Example 02a - Counter Display Animation
+Demonstrates animated counting from 0 to 100 on braille display
+No keyboard input required
+"""
 
 import brlapi
 import time

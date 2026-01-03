@@ -1,6 +1,10 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
-# Game: Learn the buttons on the keyboard
+"""
+Example 04a - Keyboard Learning Game
+Demonstrates advanced braille translation and text input
+Interactive learning tool with Louis library integration, file logging, and internationalization
+"""
 
 import brlapi
 import louis

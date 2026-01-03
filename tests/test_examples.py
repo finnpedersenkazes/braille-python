@@ -12,14 +12,13 @@ class TestExampleStructure:
     
     examples = [
         'example01',
-        'example01a', 
-        'example01b',
         'example02',
         'example02a',
         'example02b',
         'example02c',
-        'example04a',
-        'example05'
+        'example04',
+        'example05',
+        'example06'
     ]
     
     @pytest.mark.parametrize("example_name", examples)
@@ -59,25 +58,19 @@ class TestExampleStructure:
 
 
 class TestExample01Series:
-    """Test example01 series (keyboard input examples)"""
+    """Test example01 (keyboard input with Elm architecture)"""
 
     def test_example01_structure(self):
         """Test example01 has correct structure"""
         import example01
         assert hasattr(example01, 'main')
 
-    def test_example01a_structure(self):
-        """Test example01a has correct structure"""
-        import example01a
-        assert hasattr(example01a, 'main')
-
-    def test_example01b_elm_architecture(self):
-        """Test example01b has Elm architecture"""
-        import example01b
-        assert hasattr(example01b, 'main')
-        assert hasattr(example01b, 'init')
-        assert hasattr(example01b, 'view')
-        assert hasattr(example01b, 'update')
+    def test_example01_elm_architecture(self):
+        """Test example01 has Elm architecture"""
+        import example01
+        assert hasattr(example01, 'init')
+        assert hasattr(example01, 'view')
+        assert hasattr(example01, 'update')
 
 
 class TestExample02Series:
@@ -109,12 +102,12 @@ class TestExample04Series:
 
     def test_example04a_elm_architecture(self):
         """Test example04a has Elm architecture"""
-        import example04a
-        assert hasattr(example04a, 'main')
-        assert hasattr(example04a, 'init')
-        assert hasattr(example04a, 'view')
-        assert hasattr(example04a, 'updateByKey')
-        assert hasattr(example04a, 'updateByTime')
+        import example04
+        assert hasattr(example04, 'main')
+        assert hasattr(example04, 'init')
+        assert hasattr(example04, 'view')
+        assert hasattr(example04, 'updateByKey')
+        assert hasattr(example04, 'updateByTime')
 
 
 class TestExample05:
@@ -142,6 +135,32 @@ class TestExample05:
         assert callable(example05.updateByKey)
 
 
+class TestExample06:
+    """Test example06 (character identification game)"""
+
+    def test_example06_structure(self):
+        """Test example06 has correct structure"""
+        import example06
+        assert hasattr(example06, 'main')
+
+    def test_example06_elm_architecture(self):
+        """Verify example06 uses Elm architecture"""
+        import example06
+        
+        # Check for Elm architecture components
+        assert hasattr(example06, 'init')
+        assert hasattr(example06, 'view')
+        assert hasattr(example06, 'updateByKey')
+        assert hasattr(example06, 'updateByGameStart')
+        assert hasattr(example06, 'updateByNewChallenge')
+        
+        # Check these are callable
+        assert callable(example06.init)
+        assert callable(example06.view)
+        assert callable(example06.updateByKey)
+        assert callable(example06.updateByGameStart)
+
+
 class TestExampleSyntax:
     """Test that all examples have valid Python syntax"""
 
@@ -151,9 +170,9 @@ class TestExampleSyntax:
         examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
         
         example_files = [
-            'example01.py', 'example01a.py', 'example01b.py',
+            'example01.py',
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
-            'example04a.py', 'example05.py'
+            'example04.py', 'example05.py', 'example06.py'
         ]
         
         for filename in example_files:

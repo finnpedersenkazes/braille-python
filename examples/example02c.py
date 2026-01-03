@@ -1,7 +1,10 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
-# This example fills the display with dots
-#
+"""
+Example 02c - Progressive Display Filling
+Demonstrates progressive cell-by-cell filling animation
+Fills each cell with dots from position 1 to 8
+"""
 
 import brlapi
 import time

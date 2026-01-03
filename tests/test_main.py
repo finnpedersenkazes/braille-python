@@ -53,16 +53,16 @@ def test_main_full_example_name():
 
 
 def test_main_example_with_letter_suffix():
-    """Test example with letter suffix (04a -> example04a)"""
+    """Test example with letter suffix (04 -> example04)"""
     with patch('builtins.__import__') as mock_import:
         mock_module = MagicMock()
         mock_module.main = MagicMock()
         mock_import.return_value = mock_module
         
-        with patch.object(sys, 'argv', ['main.py', '04a']):
+        with patch.object(sys, 'argv', ['main.py', '04']):
             main.main()
         
-        mock_import.assert_called_once_with('example04a')
+        mock_import.assert_called_once_with('example04')
         mock_module.main.assert_called_once()
 
 

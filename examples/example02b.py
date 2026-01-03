@@ -1,7 +1,10 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
-# This example shows a traveling dot.
-#
+"""
+Example 02b - Traveling Dot Animation
+Demonstrates animated dot moving across braille display
+Shows all 8 dot positions in each cell
+"""
 
 import brlapi
 import time
