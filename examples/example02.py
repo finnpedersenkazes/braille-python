@@ -3,20 +3,27 @@
 import brlapi
 import time
 
-brl = brlapi.Connection()
-brl.enterTtyModeWithPath()
-print("display size: " + str(brl.displaySize))
-print("driver name: " + str(brl.driverName))
 
-try:
-    brl.writeText("This is a 5 sec test")
-    print("writing text for 5 seconds...")
+def main():
+    brl = brlapi.Connection()
+    brl.enterTtyModeWithPath()
+    print("display size: " + str(brl.displaySize))
+    print("driver name: " + str(brl.driverName))
 
-except Exception as e:
-    print(e)
+    try:
+        brl.writeText("This is a 5 sec test")
+        print("writing text for 5 seconds...")
+        time.sleep(5)
+        brl.writeText("Stop")
 
-time.sleep(5)
-print("Stop...")
+    except Exception as e:
+        print(e)
 
-brl.leaveTtyMode()
-brl.closeConnection()
+    print("Stop...")
+
+    brl.leaveTtyMode()
+    brl.closeConnection()
+
+
+if __name__ == "__main__":
+    main()

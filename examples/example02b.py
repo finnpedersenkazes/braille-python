@@ -6,23 +6,25 @@
 import brlapi
 import time
 
-brl = brlapi.Connection()
-brl.enterTtyModeWithPath()
 
-(displayLength, displayHeight) = brl.displaySize
+def main():
+    brl = brlapi.Connection()
+    brl.enterTtyModeWithPath()
 
-print("display size: %i x %i" % (displayLength, displayHeight))
-print("driver name: " + str(brl.driverName))
+    (displayLength, displayHeight) = brl.displaySize
 
-start = time.time()
-c = 0
-dot = brlapi.DOT1
-cells = []
-for i in range(40):
-    cells.append(dot)
+    print("display size: %i x %i" % (displayLength, displayHeight))
+    print("driver name: " + str(brl.driverName))
 
-try:
-    while c < 320:
+    start = time.time()
+    c = 0
+    dot = brlapi.DOT1
+    cells = []
+    for i in range(displayLength):
+        cells.append(dot)
+
+    try:
+        while c < displayLength * 8:
         t = time.time()
         timepassed = round(t - start)
         time.sleep(0.1)
@@ -44,7 +46,7 @@ try:
             dot = brlapi.DOT4
 
         cells = []
-        for i in range(40):
+        for i in range(displayLength):
             if c // 8 == i:
                 cells.append(dot)
             else:
@@ -56,8 +58,12 @@ try:
 
         c = c + 1
 
-except Exception as e:
-    print(e)
+    except Exception as e:
+        print(e)
 
-brl.leaveTtyMode()
-brl.closeConnection()
+    brl.leaveTtyMode()
+    brl.closeConnection()
+
+
+if __name__ == "__main__":
+    main()

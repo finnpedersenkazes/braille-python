@@ -34,14 +34,17 @@ def main():
         # Import and run the selected example
         print(f"Running {example_name}...")
         example_module = __import__(example_name)
-        example_module.main()
+        
+        # Check if the module has a main() function
+        if hasattr(example_module, 'main'):
+            example_module.main()
+        else:
+            # Old-style examples run on import, so just indicate completion
+            print(f"{example_name} completed (no main() function, executed on import)")
     except ImportError as e:
         print(f"Error: Could not import {example_name}")
         print(f"Make sure the file examples/{example_name}.py exists")
         print(f"Details: {e}")
-        sys.exit(1)
-    except AttributeError:
-        print(f"Error: {example_name}.py does not have a main() function")
         sys.exit(1)
 
 
