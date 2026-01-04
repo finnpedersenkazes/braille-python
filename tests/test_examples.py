@@ -150,15 +150,15 @@ class TestExample06:
         # Check for Elm architecture components
         assert hasattr(example06, 'init')
         assert hasattr(example06, 'view')
-        assert hasattr(example06, 'updateByKey')
-        assert hasattr(example06, 'updateByGameStart')
-        assert hasattr(example06, 'updateByNewChallenge')
+        assert hasattr(example06, 'update_by_key')
+        assert hasattr(example06, 'update_by_game_start')
+        assert hasattr(example06, 'update_by_new_challenge')
         
         # Check these are callable
         assert callable(example06.init)
         assert callable(example06.view)
-        assert callable(example06.updateByKey)
-        assert callable(example06.updateByGameStart)
+        assert callable(example06.update_by_key)
+        assert callable(example06.update_by_game_start)
 
 
 class TestExampleSyntax:

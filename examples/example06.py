@@ -27,14 +27,16 @@ Learning objectives:
 - Braille keyboard input practice
 """
 
-import brlapi
 import sys
 import os
 import time
 
+import brlapi
+
 # Add src to path to import libraries
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
+# pylint: disable=wrong-import-position,import-error
 from library import (
     printProperty,
     printDiagnostics,
@@ -43,7 +45,6 @@ from library import (
     tens,
     units,
     charToBrailleDots,
-    brailleDotsToChar,
     combineKeysToDots,
     randomChar,
     randomPosition,
@@ -55,86 +56,78 @@ from library import (
 # Model - Game state initialization
 # ============================================================================
 
-def getMessage(code, **params):
+def get_message(code, **params):
     """Get message based on code and parameters"""
-    if code == "start":
-        return "Press any key to start"
-    elif code == "find":
-        char = params.get("char", "?")
-        pos = params.get("position", 0)
-        return f"Find character '{char}' at position {pos} (press cursor button under it)"
-    elif code == "waiting_position":
-        char = params.get("char", "?")
-        pos = params.get("position", 0)
-        return f"Target: '{char}' at position {pos}. Click cursor button under it."
-    elif code == "position_selected":
-        pos = params.get("position", 0)
-        char = params.get("char", "?")
-        return f"Position {pos} selected. Now press dots for '{char}'"
-    elif code == "correct":
-        char = params.get("char", "?")
-        score = params.get("score", 0)
-        return f"Correct! '{char}' found. Score: {score}"
-    elif code == "incorrect_position":
-        return "Wrong position. Try again!"
-    elif code == "incorrect_dots":
-        return "Wrong dots. Try again!"
-    elif code == "game_over":
-        score = params.get("score", 0)
-        attempts = params.get("attempts", 0)
-        return f"Game Over! Score: {score}/{attempts}"
-    else:
-        return ""
+    messages = {
+        "start": lambda p: "Press any key to start",
+        "find": lambda p: (
+            f"Find character '{p.get('char', '?')}' at position {p.get('position', 0)} "
+            f"(press cursor button under it)"
+        ),
+        "waiting_position": lambda p: (
+            f"Target: '{p.get('char', '?')}' at position {p.get('position', 0)}. "
+            f"Click cursor button under it."
+        ),
+        "position_selected": lambda p: (
+            f"Position {p.get('position', 0)} selected. "
+            f"Now press dots for '{p.get('char', '?')}'"
+        ),
+        "correct": lambda p: f"Correct! '{p.get('char', '?')}' found. Score: {p.get('score', 0)}",
+        "incorrect_position": lambda p: "Wrong position. Try again!",
+        "incorrect_dots": lambda p: "Wrong dots. Try again!",
+        "game_over": lambda p: f"Game Over! Score: {p.get('score', 0)}/{p.get('attempts', 0)}",
+    }
+    return messages.get(code, lambda p: "")(params)
 
 
-def generateChallenge(displayWidth):
+def generate_challenge(display_width):
     """Generate new random character and position for challenge"""
     # Pick random character (a-z)
-    targetChar = randomChar()
-    
+    target_char = randomChar()
+
     # Pick random position in game area (last 5 cells reserved for score)
-    gameWidth = displayWidth - 5
-    targetPosition = randomPosition(gameWidth)
-    
-    return targetChar, targetPosition
+    game_width = display_width - 5
+    target_position = randomPosition(game_width)
+
+    return target_char, target_position
 
 
 def init(brl):
     """Initialize the game model with all possible states"""
-    displayWidth = brl.displaySize[0]
-    
+    display_width = brl.displaySize[0]
+
     return {
         "targetChar": "",
         "targetPosition": 0,
-        "displayWidth": displayWidth,
+        "displayWidth": display_width,
         "score": 0,
         "attempts": 0,
         "currentPhase": "start",  # "start", "waiting", "position_selected", "complete"
         "selectedPosition": None,
         "selectedDots": [],
-        "message": getMessage("start"),
+        "message": get_message("start"),
         "gameStarted": False,
         "counter": 0,
     }
 
 
-def printLog(m):
+def print_log(m):
     """Print model state to log"""
     printProperty("LOG", f"Phase: {m['currentPhase']}")
     printProperty("Counter", str(m["counter"]))
     printProperty("Message", m["message"])
-    
+
     if m["gameStarted"]:
         printProperty("Target Char", m["targetChar"])
         printProperty("Target Position", str(m["targetPosition"]))
         printProperty("Score", str(m["score"]))
         printProperty("Attempts", str(m["attempts"]))
-        
+
         if m["selectedPosition"] is not None:
             printProperty("Selected Position", str(m["selectedPosition"]))
         if m["selectedDots"]:
             printProperty("Selected Dots", str(m["selectedDots"]))
-    
+
     printProperty("-------", "-------------------------")
 
 
@@ -142,135 +135,151 @@ def printLog(m):
 # Update - Game logic and state updates
 # ============================================================================
 
-def updateByGameStart(m):
+def convert_dots_arg_to_list(dots_arg):
+    """Convert braille dot argument bitmask to list of dot numbers (1-6)"""
+    dot_list = []
+    if dots_arg & brlapi.DOT1:
+        dot_list.append(1)
+    if dots_arg & brlapi.DOT2:
+        dot_list.append(2)
+    if dots_arg & brlapi.DOT3:
+        dot_list.append(3)
+    if dots_arg & brlapi.DOT4:
+        dot_list.append(4)
+    if dots_arg & brlapi.DOT5:
+        dot_list.append(5)
+    if dots_arg & brlapi.DOT6:
+        dot_list.append(6)
+    return dot_list
+
+
+def handle_dot_input(m, dots_arg):
+    """Handle braille keyboard dot input"""
+    dot_list = convert_dots_arg_to_list(dots_arg)
+    for dot in dot_list:
+        m = update_by_dot_key(m, dot)
+    return update_by_submit(m)
+
+
+def handle_space_key(m):
+    """Handle space bar key based on current game phase"""
+    if m["currentPhase"] == "start":
+        return update_by_game_start(m)
+    if m["currentPhase"] == "position_selected":
+        return update_by_submit(m)
+    if m["currentPhase"] == "complete":
+        return update_by_new_challenge(m)
+    return m
+
+def update_by_game_start(m):
     """Initialize game and generate first challenge"""
     m["gameStarted"] = True
-    targetChar, targetPosition = generateChallenge(m["displayWidth"])
-    m["targetChar"] = targetChar
-    m["targetPosition"] = targetPosition
+    target_char, target_position = generate_challenge(m["displayWidth"])
+    m["targetChar"] = target_char
+    m["targetPosition"] = target_position
     m["currentPhase"] = "waiting"
-    m["message"] = getMessage("find", char=targetChar, position=targetPosition)
+    m["message"] = get_message("find", char=target_char, position=target_position)
     m["attempts"] = 0
     m["score"] = 0
     return m
 
 
-def updateByNewChallenge(m):
+def update_by_new_challenge(m):
     """Generate new challenge"""
-    targetChar, targetPosition = generateChallenge(m["displayWidth"])
-    m["targetChar"] = targetChar
-    m["targetPosition"] = targetPosition
+    target_char, target_position = generate_challenge(m["displayWidth"])
+    m["targetChar"] = target_char
+    m["targetPosition"] = target_position
     m["currentPhase"] = "waiting"
     m["selectedPosition"] = None
     m["selectedDots"] = []
-    m["message"] = getMessage("find", char=targetChar, position=targetPosition)
+    m["message"] = get_message("find", char=target_char, position=target_position)
     return m
 
 
-def updateByCursorPress(m, position):
+def update_by_cursor_press(m, position):
     """Handle cursor routing button press"""
     if m["currentPhase"] == "waiting":
         m["selectedPosition"] = position
         m["currentPhase"] = "position_selected"
-        m["message"] = getMessage("position_selected", position=position, char=m["targetChar"])
+        m["message"] = get_message("position_selected", position=position, char=m["targetChar"])
         m["selectedDots"] = []  # Reset dots for new attempt
     return m
 
 
-def updateByDotKey(m, dotNumber):
+def update_by_dot_key(m, dot_number):
     """Handle braille keyboard dot key press (1-6)"""
     if m["currentPhase"] == "position_selected":
         # Add dot if not already in list
-        if dotNumber not in m["selectedDots"]:
-            m["selectedDots"].append(dotNumber)
+        if dot_number not in m["selectedDots"]:
+            m["selectedDots"].append(dot_number)
             m["selectedDots"].sort()  # Keep sorted for consistency
         # Auto-submit if user has entered dots (simple approach: wait for space/enter)
     return m
 
 
-def updateBySubmit(m):
+def update_by_submit(m):
     """Validate answer and update score"""
     if m["currentPhase"] == "position_selected" and m["selectedDots"]:
         # Check position
         if m["selectedPosition"] != m["targetPosition"]:
-            m["message"] = getMessage("incorrect_position")
+            m["message"] = get_message("incorrect_position")
             m["selectedPosition"] = None
             m["selectedDots"] = []
             m["currentPhase"] = "waiting"
             return m
-        
+
         # Check dots
-        userDots = combineKeysToDots(m["selectedDots"])
-        targetDots = charToBrailleDots(m["targetChar"])
-        
+        user_dots = combineKeysToDots(m["selectedDots"])
+        target_dots = charToBrailleDots(m["targetChar"])
+
         m["attempts"] += 1
-        
-        if userDots == targetDots:
+
+        if user_dots == target_dots:
             m["score"] += 1
             m["currentPhase"] = "complete"
-            m["message"] = getMessage("correct", char=m["targetChar"], score=m["score"])
+            m["message"] = get_message("correct", char=m["targetChar"], score=m["score"])
         else:
-            m["message"] = getMessage("incorrect_dots")
+            m["message"] = get_message("incorrect_dots")
             m["selectedDots"] = []
             # Stay in position_selected phase to try dots again
-    
+
     return m
 
 
-def updateByQuit(m):
+def update_by_quit(m):
     """End game"""
-    m["message"] = getMessage("game_over", score=m["score"], attempts=m["attempts"])
+    m["message"] = get_message("game_over", score=m["score"], attempts=m["attempts"])
     m["gameStarted"] = False
     m["currentPhase"] = "start"
     return m
 
 
-def updateByKey(brl, m, keyCode):
+def update_by_key(brl, m, key_code):
     """Update model based on key press"""
-    k = brl.expandKeyCode(keyCode)
+    k = brl.expandKeyCode(key_code)
     m["counter"] += 1
-    
+
     # Check for cursor routing key (position selection)
     if (k["type"] == brlapi.KEY_TYPE_CMD) and (k["command"] == brlapi.KEY_CMD_ROUTE):
         position = k["argument"]
-        m = updateByCursorPress(m, position)
-    
+        return update_by_cursor_press(m, position)
+
     # Check for braille keyboard dot keys (command 0x220000 with argument as dots)
-    elif (k["type"] == brlapi.KEY_TYPE_CMD) and (k["command"] == 0x220000) and (k["argument"] != 0):
-        # Convert dot pattern to list of dot numbers
-        dots_arg = k["argument"]
-        dot_list = []
-        if dots_arg & brlapi.DOT1: dot_list.append(1)
-        if dots_arg & brlapi.DOT2: dot_list.append(2)
-        if dots_arg & brlapi.DOT3: dot_list.append(3)
-        if dots_arg & brlapi.DOT4: dot_list.append(4)
-        if dots_arg & brlapi.DOT5: dot_list.append(5)
-        if dots_arg & brlapi.DOT6: dot_list.append(6)
-        
-        # Add each dot
-        for dot in dot_list:
-            m = updateByDotKey(m, dot)
-        
-        # Auto-submit after receiving dot combination
-        m = updateBySubmit(m)
-    
+    if (k["type"] == brlapi.KEY_TYPE_CMD) and (k["command"] == 0x220000) and (k["argument"] != 0):
+        return handle_dot_input(m, k["argument"])
+
     # Space bar - submit answer or start game
-    elif keyCode == brlapi.KEY_TYPE_CMD | 0x220000:
-        if m["currentPhase"] == "start":
-            m = updateByGameStart(m)
-        elif m["currentPhase"] == "position_selected":
-            m = updateBySubmit(m)
-        elif m["currentPhase"] == "complete":
-            m = updateByNewChallenge(m)
-    
+    if key_code == brlapi.KEY_TYPE_CMD | 0x220000:
+        return handle_space_key(m)
+
     # Line Down - quit game
-    elif keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNDN:
-        m = updateByQuit(m)
-    
+    if key_code == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNDN:
+        return update_by_quit(m)
+
     # Home button - quit game
-    elif keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME:
-        m = updateByQuit(m)
-    
+    if key_code == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME:
+        return update_by_quit(m)
+
     return m
 
 
@@ -278,7 +287,7 @@ def updateByKey(brl, m, keyCode):
 # View - Game rendering
 # ============================================================================
 
-def scoreToDisplay(score):
+def score_to_display(score):
     """Render score as braille cells (5 cells for right side display)
     Format: blank, blank, p, tens_digit, units_digit
     """
@@ -291,50 +300,50 @@ def scoreToDisplay(score):
     return cells
 
 
-def challengeToDisplay(m):
+def challenge_to_display(m):
     """Render challenge character and fill other positions with blanks"""
     cells = []
-    
+
     # Fill game area (display width minus 5 cells for score)
-    gameWidth = m["displayWidth"] - 5
-    for i in range(gameWidth):
+    game_width = m["displayWidth"] - 5
+    for i in range(game_width):
         if i == m["targetPosition"]:
             cells.append(charToBrailleDots(m["targetChar"]))
         else:
             # Fill with blank
             cells.append(0)
-    
+
     # Add score display on the right side
-    cells.extend(scoreToDisplay(m["score"]))
-    
+    cells.extend(score_to_display(m["score"]))
+
     # Add cursor at selected position
     if m["selectedPosition"] is not None:
-        for i in range(len(cells)):
+        for i, _ in enumerate(cells):
             if i == m["selectedPosition"]:
                 cells[i] |= brlapi.DOT7 | brlapi.DOT8
-    
+
     return bytes(cells)
 
 
-def gameToDots(m):
+def game_to_dots(m):
     """Convert game state to braille dots for display"""
     if not m["gameStarted"]:
         # Show start message
         cells = [0] * m["displayWidth"]
         return bytes(cells)
-    
-    return challengeToDisplay(m)
+
+    return challenge_to_display(m)
 
 
 def view(brl, m):
     """Visualize the model on the braille display"""
-    printLog(m)
-    
+    print_log(m)
+
     if m["displayWidth"] == 0:
         print("Warning: No braille display detected. Skipping writeDots.")
         return
-    
-    dots = gameToDots(m)
+
+    dots = game_to_dots(m)
     dots = dotsToDisplaySize(dots, m["displayWidth"])
     brl.writeDots(dots)
 
@@ -347,38 +356,38 @@ def main():
     """Main game loop"""
     try:
         printProperty("Initialization", "Before Connection")
-        
+
         # Initialization
         b = brlapi.Connection()
         b.enterTtyModeWithPath()
         b.acceptKeys(brlapi.rangeType_all, [0])
         printDiagnostics(b)
-        
+
         # The architecture
         model = init(b)
         view(b, model)
-        
-        waitForKeyPress = True
+
+        wait_for_key_press = True
         while model["currentPhase"] != "quit":
-            key = b.readKey(waitForKeyPress)
-            
+            key = b.readKey(wait_for_key_press)
+
             if key:
-                model = updateByKey(b, model, key)
+                model = update_by_key(b, model, key)
                 view(b, model)
-                
+
                 # Generate new challenge after completing one
                 if model["currentPhase"] == "complete":
                     time.sleep(2)  # Show success message
-                    model = updateByNewChallenge(model)
+                    model = update_by_new_challenge(model)
                     view(b, model)
-        
+
         # Show final score
         view(b, model)
         time.sleep(3)
-        
+
         b.leaveTtyMode()
         b.closeConnection()
-    
+
     except brlapi.ConnectionError as e:
         handleConnectionError(e)
 
