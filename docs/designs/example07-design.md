@@ -176,12 +176,12 @@ Position: 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19
 
 ## Navigation
 
-| Key or Button      | BrlAPI Key Code            | Action                                    |
-| ------------------ | -------------------------- | ----------------------------------------- |
-| Previous thumb key | KEY_TYPE_CMD \| KEY_CMD_LNUP | Navigate to previous line (with wrap)     |
-| Next thumb key     | KEY_TYPE_CMD \| KEY_CMD_LNDN | Navigate to next line (with wrap)         |
-| Home button        | KEY_TYPE_CMD \| KEY_CMD_HOME | Quit program                              |
-| Other keys         | Any other key code         | No effect (logged but ignored)            |
+| Key or Button      | BrlAPI Key Code              | Action                                |
+| ------------------ | ---------------------------- | ------------------------------------- |
+| Previous thumb key | KEY_TYPE_CMD \| KEY_CMD_LNUP | Navigate to previous line (with wrap) |
+| Next thumb key     | KEY_TYPE_CMD \| KEY_CMD_LNDN | Navigate to next line (with wrap)     |
+| Home button        | KEY_TYPE_CMD \| KEY_CMD_HOME | Quit program                          |
+| Other keys         | Any other key code           | No effect (logged but ignored)        |
 
 ## Implementation Plan
 
