@@ -19,22 +19,22 @@ def main():
     # Add examples directory to path
     examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
     sys.path.insert(0, examples_dir)
-    
+
     # Default example to run
     example_name = "example05"
-    
+
     # Allow command line argument to specify which example to run
     if len(sys.argv) > 1:
         example_name = sys.argv[1]
         # Allow shorthand like "05" or "3c" instead of full "example05"
         if not example_name.startswith("example"):
             example_name = "example" + example_name
-    
+
     try:
         # Import and run the selected example
         print(f"Running {example_name}...")
         example_module = __import__(example_name)
-        
+
         # Check if the module has a main() function
         if hasattr(example_module, 'main'):
             example_module.main()

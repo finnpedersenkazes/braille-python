@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'examples'))
 
 class TestExampleStructure:
     """Test that all examples have consistent structure"""
-    
+
     examples = [
         'example01',
         'example02',
@@ -21,35 +21,35 @@ class TestExampleStructure:
         'example06',
         'example07'
     ]
-    
+
     @pytest.mark.parametrize("example_name", examples)
     def test_example_has_main_function(self, example_name):
         """Test that example has a main() function"""
         module = __import__(example_name)
         assert hasattr(module, 'main'), f"{example_name} should have a main() function"
         assert callable(module.main), f"{example_name}.main should be callable"
-    
+
     @pytest.mark.parametrize("example_name", examples)
     def test_example_has_name_main_guard(self, example_name):
         """Test that example has if __name__ == '__main__' guard"""
         example_path = os.path.join(
-            os.path.dirname(__file__), 
-            '..', 
-            'examples', 
+            os.path.dirname(__file__),
+            '..',
+            'examples',
             f'{example_name}.py'
         )
         with open(example_path, 'r') as f:
             content = f.read()
         assert 'if __name__ == "__main__"' in content, \
             f"{example_name} should have if __name__ == '__main__' guard"
-    
+
     @pytest.mark.parametrize("example_name", examples)
     def test_example_imports_brlapi(self, example_name):
         """Test that example imports brlapi"""
         example_path = os.path.join(
-            os.path.dirname(__file__), 
-            '..', 
-            'examples', 
+            os.path.dirname(__file__),
+            '..',
+            'examples',
             f'{example_name}.py'
         )
         with open(example_path, 'r') as f:
@@ -122,13 +122,13 @@ class TestExample05:
     def test_example05_elm_architecture(self):
         """Verify example05 uses Elm architecture"""
         import example05
-        
+
         # Check for Elm architecture components
         assert hasattr(example05, 'init')
         assert hasattr(example05, 'view')
         assert hasattr(example05, 'update_by_time')
         assert hasattr(example05, 'update_by_key')
-        
+
         # Check these are callable
         assert callable(example05.init)
         assert callable(example05.view)
@@ -147,14 +147,14 @@ class TestExample06:
     def test_example06_elm_architecture(self):
         """Verify example06 uses Elm architecture"""
         import example06
-        
+
         # Check for Elm architecture components
         assert hasattr(example06, 'init')
         assert hasattr(example06, 'view')
         assert hasattr(example06, 'update_by_key')
         assert hasattr(example06, 'update_by_game_start')
         assert hasattr(example06, 'update_by_new_challenge')
-        
+
         # Check these are callable
         assert callable(example06.init)
         assert callable(example06.view)
@@ -173,14 +173,14 @@ class TestExample07:
     def test_example07_elm_architecture(self):
         """Verify example07 uses Elm architecture"""
         import example07
-        
+
         # Check for Elm architecture components
         assert hasattr(example07, 'init')
         assert hasattr(example07, 'view')
         assert hasattr(example07, 'update_by_key')
         assert hasattr(example07, 'update_by_line_up')
         assert hasattr(example07, 'update_by_line_down')
-        
+
         # Check these are callable
         assert callable(example07.init)
         assert callable(example07.view)
@@ -191,12 +191,12 @@ class TestExample07:
     def test_example07_pattern_generation(self):
         """Test pattern generation functions"""
         import example07
-        
+
         # Test filled pattern
         filled = example07.create_filled_pattern('a', 5)
         assert len(filled) == 5
         assert all(cell == filled[0] for cell in filled)  # All cells same
-        
+
         # Test alternating pattern
         alternating = example07.create_alternating_pattern('a', 6)
         assert len(alternating) == 6
@@ -210,29 +210,29 @@ class TestExample07:
     def test_example07_line_wrapping(self):
         """Test line navigation wrapping logic"""
         import example07
-        
+
         # Mock model
         model = {
             'current_line': 1,
             'total_lines': 9,
             'counter': 0
         }
-        
+
         # Test wrap from line 1 to line 9 (going up)
         model['current_line'] = 1
         model = example07.update_by_line_up(model)
         assert model['current_line'] == 9
-        
+
         # Test wrap from line 9 to line 1 (going down)
         model['current_line'] = 9
         model = example07.update_by_line_down(model)
         assert model['current_line'] == 1
-        
+
         # Test normal navigation
         model['current_line'] = 5
         model = example07.update_by_line_up(model)
         assert model['current_line'] == 4
-        
+
         model['current_line'] = 5
         model = example07.update_by_line_down(model)
         assert model['current_line'] == 6
@@ -245,13 +245,13 @@ class TestExampleSyntax:
         """Test that all example files can be compiled"""
         import py_compile
         examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
-        
+
         example_files = [
             'example01.py',
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
             'example04.py', 'example05.py', 'example06.py', 'example07.py'
         ]
-        
+
         for filename in example_files:
             filepath = os.path.join(examples_dir, filename)
             try:

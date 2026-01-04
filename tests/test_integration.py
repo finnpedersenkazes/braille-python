@@ -16,7 +16,7 @@ class TestDevelopmentPlatform(unittest.TestCase):
     def test_src_directory_structure(self):
         """Test that src directory has expected files"""
         src_dir = os.path.join(os.path.dirname(__file__), '..', 'src')
-        
+
         expected_files = ['library.py', 'model.py', 'update.py', 'view.py', 'main.py']
         for filename in expected_files:
             filepath = os.path.join(src_dir, filename)
@@ -28,7 +28,7 @@ class TestDevelopmentPlatform(unittest.TestCase):
     def test_examples_directory_structure(self):
         """Test that examples directory has expected files"""
         examples_dir = os.path.join(os.path.dirname(__file__), '..', 'examples')
-        
+
         expected_files = [
             'example01.py',
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
@@ -44,7 +44,7 @@ class TestDevelopmentPlatform(unittest.TestCase):
     def test_all_modules_import_cleanly(self):
         """Test that all src modules can be imported"""
         modules = ['library', 'model', 'update', 'view', 'main']
-        
+
         for module_name in modules:
             with self.subTest(module=module_name):
                 module = __import__(module_name)
@@ -57,19 +57,19 @@ class TestElmArchitecture(unittest.TestCase):
     def test_example05_elm_architecture(self):
         """Test example05 implements full Elm architecture"""
         import example05
-        
+
         # Check for init, update, view pattern
         self.assertTrue(hasattr(example05, 'init'))
         self.assertTrue(hasattr(example05, 'update_by_time'))
         self.assertTrue(hasattr(example05, 'update_by_key'))
         self.assertTrue(hasattr(example05, 'view'))
-        
+
         # Test init returns a dictionary (model)
         mock_brl = Mock()
         mock_brl.displaySize = (20, 1)
         model = example05.init(mock_brl)
         self.assertIsInstance(model, dict)
-        
+
         # Model should have expected keys
         expected_keys = ['cursorPos', 'obstaclePos', 'points', 'collision', 'stop', 'counter', 'displayWidth', 'message']
         for key in expected_keys:
@@ -78,12 +78,12 @@ class TestElmArchitecture(unittest.TestCase):
     def test_example04_elm_architecture(self):
         """Test example04 implements Elm architecture"""
         import example04
-        
+
         # Check for init, update, view pattern
         self.assertTrue(hasattr(example04, 'init'))
         self.assertTrue(hasattr(example04, 'update_by_key'))
         self.assertTrue(hasattr(example04, 'view'))
-        
+
         # Test init returns a model
         mock_brl = Mock()
         mock_brl.displaySize = (20, 1)
@@ -99,11 +99,11 @@ class TestLauncherIntegration(unittest.TestCase):
     def test_launcher_runs_example05(self, mock_example_main):
         """Test launcher can run example05"""
         import main
-        
+
         # Run main (it will import example05 and call its main)
         with patch('builtins.print'):
             main.main()
-        
+
         # Verify example05.main was called
         mock_example_main.assert_called_once()
 
@@ -119,7 +119,7 @@ class TestConsistency(unittest.TestCase):
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
             'example04.py', 'example05.py', 'example06.py'
         ]
-        
+
         for filename in example_files:
             filepath = os.path.join(examples_dir, filename)
             with self.subTest(file=filename):
@@ -138,7 +138,7 @@ class TestConsistency(unittest.TestCase):
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
             'example04.py', 'example05.py', 'example06.py'
         ]
-        
+
         for filename in example_files:
             filepath = os.path.join(examples_dir, filename)
             with self.subTest(file=filename):

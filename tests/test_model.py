@@ -28,7 +28,7 @@ class TestModelModule(unittest.TestCase):
         """Test that print_diagnostics calls print_property for each field"""
         import model
         import brlapi
-        
+
         # Create mock braille connection
         mock_brl = Mock()
         mock_brl.fileDescriptor = 5
@@ -37,7 +37,7 @@ class TestModelModule(unittest.TestCase):
         mock_brl.driverName = "test_driver"
         mock_brl.modelIdentifier = "test_model"
         mock_brl.displaySize = (20, 1)
-        
+
         model.print_diagnostics(mock_brl)
 
         # Verify print_property was called
@@ -50,7 +50,7 @@ class TestModelPatterns(unittest.TestCase):
     def test_model_module_is_template(self):
         """Test that model module serves as template/documentation"""
         import model
-        
+
         # Module should have docstring explaining its purpose
         self.assertIsNotNone(model.__doc__)
         self.assertIn("Elm", model.__doc__)

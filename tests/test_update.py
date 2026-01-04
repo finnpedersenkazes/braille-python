@@ -29,7 +29,7 @@ class TestUpdatePatterns(unittest.TestCase):
     def test_update_module_is_template(self):
         """Test that update module serves as template/documentation"""
         import update
-        
+
         # Module should explain update patterns
         self.assertIn("update", update.__doc__.lower())
 

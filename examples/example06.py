@@ -18,7 +18,7 @@ The game provides immediate feedback and tracks score and attempts.
 
 Architecture:
 - Model: Game state with target character, position, score, and phase
-- Update: Handles cursor presses, dot inputs, and phase transitions  
+- Update: Handles cursor presses, dot inputs, and phase transitions
 - View: Renders challenge display with score counter
 
 Learning objectives:

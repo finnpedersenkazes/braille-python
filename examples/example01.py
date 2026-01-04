@@ -77,14 +77,14 @@ def update(brl, m, keyCode):
     m["command"] = k["command"]
     m["argument"] = k["argument"]
     m["flags"] = k["flags"]
-    
+
     # Capture text input
     if m["type"] == 0:
         m["text"] = m["text"] + chr(m["argument"])
-    
+
     # Update counter and message
     m["counter"] = m["counter"] + 1
-    
+
     # Identify specific keys
     if keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME:
         m["message"] = "Home Button"
@@ -96,7 +96,7 @@ def update(brl, m, keyCode):
         m["message"] = "Tab"
     else:
         m["message"] = "Key pressed"
-    
+
     return m
 
 

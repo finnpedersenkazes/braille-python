@@ -26,7 +26,7 @@ class TestViewModule(unittest.TestCase):
     def test_view_imports_from_library(self):
         """Test that view module imports necessary functions from library"""
         import view
-        
+
         # View module should import display utilities
         # Just verify it can be imported without errors
 
@@ -37,7 +37,7 @@ class TestViewPatterns(unittest.TestCase):
     def test_view_module_is_template(self):
         """Test that view module serves as template/documentation"""
         import view
-        
+
         # Module should explain view patterns
         self.assertIn("view", view.__doc__.lower())
 

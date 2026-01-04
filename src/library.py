@@ -280,7 +280,7 @@ def char_to_braille_dots(char):
     Returns integer with bits set for dots 1-6
     """
     char = char.lower()
-    
+
     # Braille alphabet mapping (dots 1-6)
     braille_map = {
         'a': brlapi.DOT1,
@@ -311,7 +311,7 @@ def char_to_braille_dots(char):
         'z': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6,
         'é': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6,  # Full cell
     }
-    
+
     return braille_map.get(char, 0)
 
 
@@ -349,7 +349,7 @@ def braille_dots_to_char(dots):
         brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6: 'y',
         brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6: 'z',
     }
-    
+
     return reverse_map.get(dots, '?')
 
 
@@ -367,11 +367,11 @@ def combine_keys_to_dots(dot_list):
         5: brlapi.DOT5,
         6: brlapi.DOT6,
     }
-    
+
     for dot_num in dot_list:
         if dot_num in dot_map:
             dots |= dot_map[dot_num]
-    
+
     return dots
 
 

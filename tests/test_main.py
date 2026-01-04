@@ -16,10 +16,10 @@ def test_main_default_example():
         mock_module = MagicMock()
         mock_module.main = MagicMock()
         mock_import.return_value = mock_module
-        
+
         with patch.object(sys, 'argv', ['main.py']):
             main.main()
-        
+
         mock_import.assert_called_once_with('example05')
         mock_module.main.assert_called_once()
 
@@ -30,10 +30,10 @@ def test_main_shorthand_example():
         mock_module = MagicMock()
         mock_module.main = MagicMock()
         mock_import.return_value = mock_module
-        
+
         with patch.object(sys, 'argv', ['main.py', '01']):
             main.main()
-        
+
         mock_import.assert_called_once_with('example01')
         mock_module.main.assert_called_once()
 
@@ -44,10 +44,10 @@ def test_main_full_example_name():
         mock_module = MagicMock()
         mock_module.main = MagicMock()
         mock_import.return_value = mock_module
-        
+
         with patch.object(sys, 'argv', ['main.py', 'example02']):
             main.main()
-        
+
         mock_import.assert_called_once_with('example02')
         mock_module.main.assert_called_once()
 
@@ -58,10 +58,10 @@ def test_main_example_with_letter_suffix():
         mock_module = MagicMock()
         mock_module.main = MagicMock()
         mock_import.return_value = mock_module
-        
+
         with patch.object(sys, 'argv', ['main.py', '04']):
             main.main()
-        
+
         mock_import.assert_called_once_with('example04')
         mock_module.main.assert_called_once()
 
@@ -80,9 +80,9 @@ def test_main_example_without_main_function():
     with patch('builtins.__import__') as mock_import:
         mock_module = MagicMock(spec=[])  # No main attribute
         mock_import.return_value = mock_module
-        
+
         with patch.object(sys, 'argv', ['main.py', '01']):
             # Should not raise an error
             main.main()
-        
+
         mock_import.assert_called_once_with('example01')
