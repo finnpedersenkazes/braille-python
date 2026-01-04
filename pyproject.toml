@@ -36,3 +36,11 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+
+[tool.pylint.main]
+# Add brlapi and louis to extension package allow list
+extension-pkg-allow-list = ["brlapi", "louis"]
+
+[tool.pylint.messages_control]
+# Disable C extension member warnings since we handle them in allow-list
+disable = ["c-extension-no-member"]
