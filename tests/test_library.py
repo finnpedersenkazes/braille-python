@@ -3,6 +3,8 @@ import os
 import sys
 from datetime import datetime
 
+import pytest
+
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
@@ -50,6 +52,7 @@ def test_dots_to_display_size():
     assert result == bytes([1, 2, 3])
 
 
+@pytest.mark.hardware
 def test_digit_dots():
     """Test digit to braille dots conversion"""
     import brlapi
@@ -92,6 +95,7 @@ def test_units():
     assert units(156) == 6
 
 
+@pytest.mark.hardware
 def test_full_cell():
     """Test full braille cell generation"""
     import brlapi
@@ -103,6 +107,7 @@ def test_full_cell():
     assert result == expected
 
 
+@pytest.mark.hardware
 def test_underline_cell():
     """Test underline cell generation"""
     import brlapi
@@ -111,6 +116,7 @@ def test_underline_cell():
     assert result == expected
 
 
+@pytest.mark.hardware
 def test_place_cursor():
     """Test cursor placement in dots array"""
     import brlapi
@@ -151,6 +157,7 @@ def test_check_display_connected():
     assert check_display_connected(brl) is False
 
 
+@pytest.mark.hardware
 def test_char_to_braille_dots():
     """Test character to braille dots conversion"""
     import brlapi
@@ -170,6 +177,7 @@ def test_char_to_braille_dots():
     assert char_to_braille_dots('?') == 0
 
 
+@pytest.mark.hardware
 def test_braille_dots_to_char():
     """Test braille dots to character conversion"""
     import brlapi
@@ -184,6 +192,7 @@ def test_braille_dots_to_char():
     assert braille_dots_to_char(brlapi.DOT7 | brlapi.DOT8) == '?'
 
 
+@pytest.mark.hardware
 def test_combine_keys_to_dots():
     """Test combining dot numbers to braille pattern"""
     import brlapi

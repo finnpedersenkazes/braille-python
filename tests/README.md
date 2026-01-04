@@ -49,6 +49,39 @@ This directory contains comprehensive tests for the braille-python development p
 
 ## Running Tests
 
+### All Tests (Local Development with Hardware)
+```bash
+pytest tests/
+```
+
+### CI/CD Tests (Skip Hardware-Dependent Tests)
+```bash
+pytest tests/ -m "not hardware"
+```
+
+### Only Hardware-Dependent Tests
+```bash
+pytest tests/ -m "hardware"
+```
+
+### Test Markers
+
+**@pytest.mark.hardware** - Marks tests that require:
+- brlapi Python module (braille display interface)
+- Physical or virtual braille display hardware
+- BrlTTY daemon running
+
+These tests are automatically skipped in CI/CD environments where braille hardware is not available.
+
+**Hardware-dependent tests:**
+- `test_library.py::test_digit_dots` - Uses brlapi.DOT constants
+- `test_library.py::test_full_cell` - Uses brlapi.DOT constants
+- `test_library.py::test_underline_cell` - Uses brlapi.DOT constants
+- `test_library.py::test_place_cursor` - Uses brlapi.DOT constants
+- `test_library.py::test_char_to_braille_dots` - Uses brlapi.DOT constants
+- `test_library.py::test_braille_dots_to_char` - Uses brlapi.DOT constants
+- `test_library.py::test_combine_keys_to_dots` - Uses brlapi.DOT constants
+
 ### Run all tests:
 ```bash
 python -m pytest tests/

@@ -36,6 +36,9 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+markers = [
+    "hardware: mark test as requiring braille display hardware (deselect with '-m \"not hardware\"')"
+]
 
 [tool.ruff]
 line-length = 100
