@@ -4,14 +4,113 @@ Being blind and using IT can be quite a challenge. But it is also an opportunity
 
 The intention with this project is to challenge the idea that braille solutions have to be expensive and for the few. Would it be possible to make games and applications for older braille displays at a relatively low cost? Would it be possible for students using Python to write these solutions?
 
+## Project Structure
+
+```
+.
+├── src/                    # Main library source code
+│   └── __init__.py
+├── examples/               # Example scripts demonstrating usage
+│   ├── example01.py
+│   ├── example01a.py
+│   ├── example01b.py
+│   ├── example02.py
+│   ├── example02a.py
+│   ├── example02b.py
+│   ├── example02c.py
+│   ├── example03.py
+│   ├── example03a.py
+│   ├── example03b.py
+│   ├── example03c.py
+│   ├── example03d.py
+│   └── example04a.py
+├── scripts/                # Utility scripts
+│   ├── diagnostics.py
+│   ├── setup_braille_display.sh
+│   └── fix_brltty_installation.sh
+├── tests/                  # Unit tests
+│   └── __init__.py
+├── docs/                   # Documentation
+│   ├── Installation.md
+│   └── BI 20X EN-UG 1.1.1.md
+├── requirements.txt        # Project dependencies
+├── pyproject.toml         # Modern Python project configuration
+└── README.md              # This file
+```
+
 ## BrlAPI
 
 This solution is based on BrlAPI and BrlTTY.
 
 https://brltty.app/
 
+## Setup
 
-### Installation 
+### System Dependencies
+
+See [docs/Installation.md](docs/Installation.md) for detailed installation instructions for different Linux distributions.
+
+Quick start for Ubuntu/Raspberry Pi OS:
+
+```bash
+sudo apt update
+sudo apt install brltty python3-brlapi python3-louis python3-venv
+```
+
+**Note:** `python3-brlapi` and `python3-louis` are system packages and are not available via pip.
+
+### Python Environment Setup
+
+Create a virtual environment with access to system packages (required for brlapi and louis):
+
+```bash
+python3 -m venv .venv --system-site-packages
+source .venv/bin/activate  # On Linux/Mac
+```
+
+### Python Dependencies
+
+Install Python dependencies from requirements.txt:
+
+```bash
+pip install -r requirements.txt
+```
+
+This will install:
+- `python-xlib` - Required for keyboard input handling
+- `pytest` - For running tests
+
+Or install with development dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+### Running the Examples
+
+Run example scripts from the project root:
+
+```bash
+python examples/example01.py
+```
+
+### Running Utilities
+
+Use the diagnostic script to check your braille display setup:
+
+```bash
+python scripts/diagnostics.py
+```
+
+Use the setup script to configure your braille display:
+
+```bash
+bash scripts/setup_braille_display.sh
+```
+
+## System Installation
+
+For detailed system-level installation and configuration instructions, see [docs/Installation.md](docs/Installation.md).
 
 #### Raspberry Pi OS
 
@@ -19,21 +118,24 @@ Install the required packages:
 
 ```bash
 sudo apt update
-sudo apt install brltty python3-brlapi python3-louis
+sudo apt install brltty python3-brlapi python3-louis python3-venv
 ```
 
-Ensure BRLTTY is running:
+Ensure BRLTTY starts automatically on boot and is running:
 
 ```bash
-sudo systemctl enable brltty
-sudo systemctl start brltty
+sudo systemctl enable brltty  # Enable to start automatically on boot
+sudo systemctl start brltty   # Start the service now
 ```
+
+**Important:** The `enable` command ensures BRLTTY starts automatically whenever the computer boots or reboots. This is essential for automatic operation without manual intervention.
 
 Verify the installation:
 
 ```bash
 brltty -v
 python3 -c "import brlapi; import louis; print('Packages installed successfully')"
+systemctl status brltty
 ```
 
 **Note:** You may need to add your user to the `brltty` or `dialout` group to access the braille display:
@@ -44,27 +146,32 @@ sudo usermod -a -G brltty $USER
 
 After adding yourself to the group, log out and log back in for the changes to take effect.
 
-#### Ubuntu
+**Configuration:** BRLTTY will automatically detect most braille displays. If you need to configure a specific device, edit `/etc/brltty.conf`. See the [BRLTTY Guidelines](https://brltty.app/guidelines.html) for distribution-specific configuration details.
+
+#### Ubuntu 
 
 Install the required packages:
 
 ```bash
 sudo apt update
-sudo apt install brltty python3-brlapi python3-louis
+sudo apt install brltty python3-brlapi python3-louis python3-venv
 ```
 
-Ensure BRLTTY is running:
+Ensure BRLTTY starts automatically on boot and is running:
 
 ```bash
-sudo systemctl enable brltty
-sudo systemctl start brltty
+sudo systemctl enable brltty  # Enable to start automatically on boot
+sudo systemctl start brltty   # Start the service now
 ```
+
+**Important:** The `enable` command ensures BRLTTY starts automatically whenever the computer boots or reboots. This is essential for automatic operation without manual intervention.
 
 Verify the installation:
 
 ```bash
 brltty -v
 python3 -c "import brlapi; import louis; print('Packages installed successfully')"
+systemctl status brltty
 ```
 
 **Note:** You may need to add your user to the `brltty` or `dialout` group to access the braille display:
@@ -75,7 +182,13 @@ sudo usermod -a -G brltty $USER
 
 After adding yourself to the group, log out and log back in for the changes to take effect.
 
-For more detailed configuration instructions, visit the [BRLTTY documentation](https://brltty.app/doc/). 
+**Configuration:** BRLTTY will automatically detect most braille displays. If you need to configure a specific device, edit `/etc/brltty.conf`. See the [BRLTTY Guidelines](https://brltty.app/guidelines.html) for distribution-specific configuration details.
+
+**Additional Resources:**
+- [BRLTTY Official Website](https://brltty.app/)
+- [BRLTTY Documentation](https://brltty.app/doc/)
+- [BRLTTY Guidelines for Linux Distributions](https://brltty.app/guidelines.html)
+- [BRLTTY Reference Manual](https://brltty.app/doc/Manual-BRLTTY/English/BRLTTY.html) 
 
 
 
@@ -113,6 +226,10 @@ I paid 1500 € for a demo model. It is an older model, but quite robust.
 - Focus 14 Blue 5th Gen costs 1400 €
 - Focus 40 Blue 5th Gen costs 3200 €
 - Focus 80 Blue 5th Gen costs 8500 €
+
+[User's Guide](https://support.freedomscientific.com/Content/Documents/Manuals/Focus/Focus40Blue/Focus-40-Blue-Online-Users-Guide.htm)
+
+[Updating the Focus Blue Firmware](https://support.freedomscientific.com/Downloads/Focus/Focus4Downloads)
 
 
 This is expensive equipment, with few capabilities and quite closed application ecosystems.

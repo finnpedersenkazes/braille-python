@@ -1,3 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+.venv2/
+venv/
+ENV/
+env/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Test and coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Mypy
+.mypy_cache/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and diagnostics
+*.log
+/tmp/diag_*.txt
+
+# Environment / secrets
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Byte-compiled / distribution files
+*.egg
+*.egg-info/
+
+# C extensions
+*.so
+
+# Misc caches
+.cache/
+.tox/
+
+# IDE run/debug configs
+.idea/
+
+# Node, if any
+node_modules/
+
+# Ignore device nodes and mounts (avoid accidentally committing system files)
+# (Keep this commented unless intentionally wanting to ignore /dev/*)
+# /dev/*
 *_log.txt
 .DS_Store
 Thumbs.db

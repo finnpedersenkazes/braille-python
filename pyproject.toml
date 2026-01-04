@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "braille-python"
+version = "0.1.0"
+description = "A Python library for working with braille displays using BrlAPI and BrlTTY"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Finn Pedersen"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "hardware: mark test as requiring braille display hardware (deselect with '-m \"not hardware\"')"
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable pycodestyle (E, W), Pyflakes (F), isort (I), pep8-naming (N), pyupgrade (UP), flake8-bugbear (B), mccabe (C90)
+select = ["E", "F", "W", "I", "N", "UP", "B", "C90"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["N802"]  # Ignore naming in tests
+"examples/**/*.py" = []  # Check examples fully
+"scripts/**/*.py" = []  # Check scripts fully
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20  # Allow higher complexity for educational code
+
+[tool.pylint.main]
+# Add brlapi and louis to extension package allow list
+extension-pkg-allow-list = ["brlapi", "louis"]
+
+[tool.pylint.messages_control]
+# Disable C extension member warnings and import errors for system packages
+disable = ["c-extension-no-member", "import-error"]

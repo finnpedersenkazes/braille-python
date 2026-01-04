@@ -1,0 +1,10 @@
+# Braille Display Dependencies
+# BrlAPI and Louis for braille display support
+# Note: python3-brlapi and python3-louis are system packages
+# Install via: sudo apt install python3-brlapi python3-louis
+
+# Additional Python Dependencies
+python-xlib>=0.33  # Required for keyboard input handling (examples 01, 01a, 01b)
+
+# Development and Testing Dependencies
+pytest>=7.4.0
