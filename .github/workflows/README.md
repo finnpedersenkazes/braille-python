@@ -33,19 +33,15 @@ pytest tests/ -m "not hardware"
 
 **Why skip hardware tests?**
 - CI runners don't have braille display hardware
-- `brlapi` and `louis` Python modules require system-installed packages that are not available in pip
-- System packages (`python3-brlapi`, `python3-louis`) are tied to system Python, not the workflow's Python version
+- Tests require functional brlapi connection to actual braille displays
+- Importing brlapi/louis at module level causes CI failures
 
-**Hardware tests that are skipped in CI:**
-- `test_library.py::test_digit_dots`
-- `test_library.py::test_full_cell`
-- `test_library.py::test_underline_cell`
-- `test_library.py::test_place_cursor`
-- `test_library.py::test_char_to_braille_dots`
-- `test_library.py::test_braille_dots_to_char`
-- `test_library.py::test_combine_keys_to_dots`
-
-These tests use `brlapi.DOT*` constants which require the brlapi module.
+**Hardware tests (35 total) are skipped in CI**, including:
+- Tests in `test_library.py` using brlapi.DOT* constants (7 tests)
+- Tests in `test_examples.py` that import example files (18 tests)
+- Tests in `test_integration.py` that run Elm architecture validation (3 tests)
+- Tests in `test_model.py` requiring hardware (1 test)
+- Additional tests requiring brlapi functionality (6 tests)
 
 ### Local Testing
 
@@ -67,8 +63,8 @@ pytest tests/ -m "hardware"
 ### Test Results
 
 - **Total tests:** 84
-- **CI tests:** 77 (84 - 7 hardware-dependent)
-- **Hardware tests:** 7
+- **CI tests:** 49 (non-hardware)
+- **Hardware tests:** 35 (skipped in CI)
 
 All non-hardware tests must pass for the workflow to succeed.
 

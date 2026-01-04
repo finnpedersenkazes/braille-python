@@ -38,7 +38,7 @@ import brlapi
 # Add src to path to import libraries
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-# pylint: disable=wrong-import-position,import-error
+# ruff: noqa: E402
 from library import (
     char_to_braille_dots,
     handle_connection_error,

@@ -276,6 +276,8 @@ All code now follows Python guidelines with zero ruff violations.
 6. Consider adding docstrings to example functions
 7. Consider refactoring complex functions in example04/example05
 
+**Historical Reference (pre-ruff migration):**
+```bash
 Run pylint $(git ls-files '*.py')
 ************* Module example01
 examples/example01.py:71:19: C0103: Argument name "keyCode" doesn't conform to snake_case naming style (invalid-name)

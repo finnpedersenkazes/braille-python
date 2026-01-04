@@ -56,11 +56,3 @@ ignore = []
 
 [tool.ruff.lint.mccabe]
 max-complexity = 20  # Allow higher complexity for educational code
-
-[tool.pylint.main]
-# Add brlapi and louis to extension package allow list
-extension-pkg-allow-list = ["brlapi", "louis"]
-
-[tool.pylint.messages_control]
-# Disable C extension member warnings and import errors for system packages
-disable = ["c-extension-no-member", "import-error"]

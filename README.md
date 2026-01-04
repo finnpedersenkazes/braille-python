@@ -8,33 +8,47 @@ The intention with this project is to challenge the idea that braille solutions 
 
 ```
 .
-├── src/                    # Main library source code
-│   └── __init__.py
-├── examples/               # Example scripts demonstrating usage
-│   ├── example01.py
-│   ├── example01a.py
-│   ├── example01b.py
-│   ├── example02.py
-│   ├── example02a.py
-│   ├── example02b.py
-│   ├── example02c.py
-│   ├── example03.py
-│   ├── example03a.py
-│   ├── example03b.py
-│   ├── example03c.py
-│   ├── example03d.py
-│   └── example04a.py
+├── src/                    # Core library modules
+│   ├── __init__.py
+│   ├── library.py          # Reusable utility functions
+│   ├── main.py             # Example launcher
+│   ├── model.py            # Model architecture template
+│   ├── update.py           # Update architecture template
+│   └── view.py             # View architecture template
+├── examples/               # Educational examples (Elm architecture)
+│   ├── example01.py        # Keyboard input with Elm architecture
+│   ├── example02.py        # Basic text display
+│   ├── example02a.py       # Counter animation
+│   ├── example02b.py       # Traveling dot animation
+│   ├── example02c.py       # Progressive filling animation
+│   ├── example04.py        # Keyboard learning game
+│   ├── example05.py        # Obstacle jump game
+│   ├── example06.py        # Character identification game
+│   ├── example07.py        # Line navigation trainer
+│   └── example08.py        # Horizontal panning trainer
 ├── scripts/                # Utility scripts
 │   ├── diagnostics.py
 │   ├── setup_braille_display.sh
 │   └── fix_brltty_installation.sh
-├── tests/                  # Unit tests
-│   └── __init__.py
+├── tests/                  # Comprehensive test suite (84 tests)
+│   ├── __init__.py
+│   ├── conftest.py         # Pytest configuration
+│   ├── test_examples.py
+│   ├── test_integration.py
+│   ├── test_library.py
+│   ├── test_main.py
+│   ├── test_model.py
+│   ├── test_update.py
+│   └── test_view.py
 ├── docs/                   # Documentation
 │   ├── Installation.md
+│   ├── issues.md           # Code quality tracking
+│   ├── designs/            # Design documents
 │   └── BI 20X EN-UG 1.1.1.md
-├── requirements.txt        # Project dependencies
-├── pyproject.toml         # Modern Python project configuration
+├── .github/workflows/      # CI/CD configuration
+│   └── lint.yml            # Ruff linter + pytest
+├── requirements.txt        # Python dependencies
+├── pyproject.toml         # Project configuration
 └── README.md              # This file
 ```
 
@@ -88,10 +102,21 @@ pip install -e ".[dev]"
 
 ### Running the Examples
 
-Run example scripts from the project root:
+Use the launcher (recommended):
+
+```bash
+python src/main.py 01    # Run example01
+python src/main.py 02a   # Run example02a
+python src/main.py 04    # Run example04
+python src/main.py 05    # Run example05 (default)
+python src/main.py 08    # Run example08
+```
+
+Or run examples directly:
 
 ```bash
 python examples/example01.py
+./examples/example01.py  # If executable
 ```
 
 ### Running Utilities
@@ -106,6 +131,62 @@ Use the setup script to configure your braille display:
 
 ```bash
 bash scripts/setup_braille_display.sh
+```
+
+## Architecture
+
+This project uses the **Elm Architecture** pattern (Model-Update-View) for all examples, providing:
+
+- **Model**: Immutable state representation
+- **Update**: Pure functions for state transitions
+- **View**: Render functions that display the model
+
+### Example Structure
+
+All examples follow a consistent pattern:
+
+```python
+def init(brl):
+    """Initialize the model"""
+    return {"key": "value", ...}
+
+def update(model, key_code):
+    """Update model based on input"""
+    return updated_model
+
+def view(model, brl):
+    """Render the model to braille display"""
+    brl.writeText(str(model["value"]))
+
+def main():
+    """Main loop: init → update → view"""
+    brl = brlapi.Connection()
+    model = init(brl)
+    while not model.get("stop", False):
+        key = brl.readKey()
+        model = update(model, key)
+        view(model, brl)
+```
+
+## Code Quality
+
+- **Linter**: ruff 0.14.10 (PEP 8 compliant)
+- **Tests**: 84 tests (pytest), all passing
+- **CI/CD**: GitHub Actions with automatic linting and testing
+- **Python**: 3.12+ (tested on 3.12.3)
+- **Coverage**: Unit tests, integration tests, example structure tests
+
+### Running Tests
+
+```bash
+# All tests (requires brlapi)
+pytest tests/
+
+# Skip hardware-dependent tests (for CI)
+pytest tests/ -m "not hardware"
+
+# Run linter
+ruff check .
 ```
 
 ## System Installation
