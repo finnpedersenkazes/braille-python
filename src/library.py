@@ -6,8 +6,8 @@ Contains reusable functions for logging, braille conversion, and utilities
 import datetime
 import os
 
-import brlapi
-import louis
+# Note: brlapi and louis are imported lazily in functions that need them
+# This allows tests to run without hardware dependencies
 
 # ============================================================================
 # Logging utilities
@@ -36,6 +36,9 @@ def print_property(name, value):
 
 def print_diagnostics(brl):
     """Print BrlAPI diagnostics information"""
+    import brlapi
+    import louis
+
     print_property("File Descriptor", str(brl.fileDescriptor))
     print_property("Server Host", str(brl.host))
     print_property("Authorization Schemes", str(brl.auth))
@@ -77,6 +80,8 @@ def adjust_number(n):
 
 def char_to_dots(char):
     """Convert character to braille dots"""
+    import louis
+
     louis_dots = louis.charToDots(translation_list(), char, len(char))
     ord_dots = ord(louis_dots)
     adjusted_dots = adjust_number(ord_dots)
@@ -85,6 +90,8 @@ def char_to_dots(char):
 
 def text_to_dots(text):
     """Convert text to braille dots array"""
+    import louis
+
     translated_text = louis.translateString(translation_list(), text)
     print_property("translatedText", translated_text)
 
@@ -111,6 +118,9 @@ def dots_to_display_size(dots, size):
 
 def digit_dots(i):
     """Convert digit (0-9) to braille dots"""
+    import brlapi
+
+    dots = 0
     if i == 0:
         dots = brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6
     elif i == 1:
@@ -162,6 +172,8 @@ def units(i):
 
 def full_cell():
     """Get a full braille cell with all dots"""
+    import brlapi
+
     return (
         brlapi.DOT1
         | brlapi.DOT2
@@ -176,11 +188,15 @@ def full_cell():
 
 def underline_cell():
     """Get underline character for braille display"""
+    import brlapi
+
     return chr(brlapi.DOT7 + brlapi.DOT8)
 
 
 def place_cursor(dots, cursor_position):
     """Place cursor at specified position in dots array"""
+    import brlapi
+
     dots_length = len(dots)
     cells = []
     for i in range(0, dots_length):
@@ -198,6 +214,8 @@ def adjust_dots(d):
 
 def dots_to_char(modifier, dots):
     """Convert braille dots back to character with optional modifier"""
+    import louis
+
     def helper(dots):
         adjusted_number = adjust_dots(dots)
         chr_number = chr(adjusted_number)
@@ -222,6 +240,8 @@ def dots_to_char(modifier, dots):
 
 def handle_connection_error(e):
     """Handle BrlAPI connection errors with appropriate messages"""
+    import brlapi
+
     if e.brlerrno == brlapi.ERROR_CONNREFUSED:
         print_property(
             "Connection refused",
@@ -279,6 +299,8 @@ def char_to_braille_dots(char):
     Convert a-z character to braille dot pattern (Grade 1 Braille)
     Returns integer with bits set for dots 1-6
     """
+    import brlapi
+
     char = char.lower()
 
     # Braille alphabet mapping (dots 1-6)
@@ -324,6 +346,8 @@ def braille_dots_to_char(dots):
     Convert braille dot pattern back to character (inverse of char_to_braille_dots)
     Returns the character or '?' if not found
     """
+    import brlapi
+
     # Reverse mapping
     reverse_map = {
         brlapi.DOT1: 'a',
@@ -362,6 +386,8 @@ def combine_keys_to_dots(dot_list):
     Combine list of dot numbers (1-6) into braille dot pattern
     Example: [1, 3, 4, 6] -> DOT1|DOT3|DOT4|DOT6
     """
+    import brlapi
+
     dots = 0
     dot_map = {
         1: brlapi.DOT1,
