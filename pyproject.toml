@@ -42,5 +42,5 @@ python_functions = ["test_*"]
 extension-pkg-allow-list = ["brlapi", "louis"]
 
 [tool.pylint.messages_control]
-# Disable C extension member warnings since we handle them in allow-list
-disable = ["c-extension-no-member"]
+# Disable C extension member warnings and import errors for system packages
+disable = ["c-extension-no-member", "import-error"]
