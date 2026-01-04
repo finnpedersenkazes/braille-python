@@ -11,12 +11,12 @@ This module provides examples and patterns for:
 
 import brlapi
 from library import (
-    printProperty,
-    textToDots,
-    dotsToDisplaySize,
+    print_property,
+    text_to_dots,
+    dots_to_display_size,
     tens,
     units,
-    digitDots,
+    digit_dots,
 )
 
 

@@ -17,15 +17,15 @@ class TestModelModule(unittest.TestCase):
         import model
         self.assertIsNotNone(model)
 
-    def test_model_has_printDiagnostics(self):
-        """Test that model module has printDiagnostics function"""
+    def test_model_has_print_diagnostics(self):
+        """Test that model module has print_diagnostics function"""
         import model
-        self.assertTrue(hasattr(model, 'printDiagnostics'))
-        self.assertTrue(callable(model.printDiagnostics))
+        self.assertTrue(hasattr(model, 'print_diagnostics'))
+        self.assertTrue(callable(model.print_diagnostics))
 
-    @patch('model.printProperty')
-    def test_printDiagnostics_calls_printProperty(self, mock_print_property):
-        """Test that printDiagnostics calls printProperty for each field"""
+    @patch('model.print_property')
+    def test_print_diagnostics_calls_print_property(self, mock_print_property):
+        """Test that print_diagnostics calls print_property for each field"""
         import model
         import brlapi
         
@@ -38,9 +38,9 @@ class TestModelModule(unittest.TestCase):
         mock_brl.modelIdentifier = "test_model"
         mock_brl.displaySize = (20, 1)
         
-        model.printDiagnostics(mock_brl)
-        
-        # Verify printProperty was called
+        model.print_diagnostics(mock_brl)
+
+        # Verify print_property was called
         self.assertGreater(mock_print_property.call_count, 0)
 
 

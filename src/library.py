@@ -13,56 +13,55 @@ import louis
 # Logging utilities
 # ============================================================================
 
-def formatTimeStamp(dateTime):
+def format_time_stamp(date_time):
     """Format datetime for use in filenames"""
-    return dateTime.isoformat()[:16].replace(":", "-")
+    return date_time.isoformat()[:16].replace(":", "-")
 
 
 # Global values for logging
-currentDateTime = datetime.datetime.now()
-logDir = os.path.join(os.path.expanduser("~"), "Documents")
-os.makedirs(logDir, exist_ok=True)
-logFileName = os.path.join(logDir, formatTimeStamp(currentDateTime) + "_log.txt")
+CURRENT_DATE_TIME = datetime.datetime.now()
+LOG_DIR = os.path.join(os.path.expanduser("~"), "Documents")
+os.makedirs(LOG_DIR, exist_ok=True)
+LOG_FILE_NAME = os.path.join(LOG_DIR, format_time_stamp(CURRENT_DATE_TIME) + "_log.txt")
 
 
-def printProperty(name, value):
+def print_property(name, value):
     """Helper function to print debug information to the log"""
     text = name + ": " + value
     print(text)
-    f = open(logFileName, "a")
-    f.write(text)
-    f.write("\n")
-    f.close()
+    with open(LOG_FILE_NAME, "a", encoding="utf-8") as f:
+        f.write(text)
+        f.write("\n")
 
 
-def printDiagnostics(brl):
+def print_diagnostics(brl):
     """Print BrlAPI diagnostics information"""
-    printProperty("File Descriptor", str(brl.fileDescriptor))
-    printProperty("Server Host", str(brl.host))
-    printProperty("Authorization Schemes", str(brl.auth))
-    printProperty("Driver Name", str(brl.driverName))
-    printProperty("Model Identifier", str(brl.modelIdentifier))
-    printProperty("Display Width", str(brl.displaySize[0]))
-    printProperty("Display Height", str(brl.displaySize[1]))
-    printProperty(".......", ".........................")
-    printProperty("DOT1", str(brlapi.DOT1))
-    printProperty("DOT2", str(brlapi.DOT2))
-    printProperty("DOT3", str(brlapi.DOT3))
-    printProperty("DOT4", str(brlapi.DOT4))
-    printProperty("DOT5", str(brlapi.DOT5))
-    printProperty("DOT6", str(brlapi.DOT6))
-    printProperty("DOT7", str(brlapi.DOT7))
-    printProperty("DOT8", str(brlapi.DOT8))
-    printProperty(".......", ".........................")
-    printProperty("Louis version", str(louis.version()))
-    printProperty(".......", ".........................")
+    print_property("File Descriptor", str(brl.fileDescriptor))
+    print_property("Server Host", str(brl.host))
+    print_property("Authorization Schemes", str(brl.auth))
+    print_property("Driver Name", str(brl.driverName))
+    print_property("Model Identifier", str(brl.modelIdentifier))
+    print_property("Display Width", str(brl.displaySize[0]))
+    print_property("Display Height", str(brl.displaySize[1]))
+    print_property(".......", ".........................")
+    print_property("DOT1", str(brlapi.DOT1))
+    print_property("DOT2", str(brlapi.DOT2))
+    print_property("DOT3", str(brlapi.DOT3))
+    print_property("DOT4", str(brlapi.DOT4))
+    print_property("DOT5", str(brlapi.DOT5))
+    print_property("DOT6", str(brlapi.DOT6))
+    print_property("DOT7", str(brlapi.DOT7))
+    print_property("DOT8", str(brlapi.DOT8))
+    print_property(".......", ".........................")
+    print_property("Louis version", str(louis.version()))
+    print_property(".......", ".........................")
 
 
 # ============================================================================
 # Braille conversion utilities
 # ============================================================================
 
-def translationList():
+def translation_list():
     """Get braille translation table list"""
     return [b"fr-bfu-comp6.utb"]
     # return [b'fr-bfu-comp8.utb']
@@ -71,46 +70,46 @@ def translationList():
     # return [b'da-dk-g18.ctb']
 
 
-def adjustNumber(n):
+def adjust_number(n):
     """Adjust number for braille translation"""
     return n - 32768  # = 2^15
 
 
-def charToDots(char):
+def char_to_dots(char):
     """Convert character to braille dots"""
-    louisDots = louis.charToDots(translationList(), char, len(char))
-    ordDots = ord(louisDots)
-    adjustedDots = adjustNumber(ordDots)
-    return adjustedDots
+    louis_dots = louis.charToDots(translation_list(), char, len(char))
+    ord_dots = ord(louis_dots)
+    adjusted_dots = adjust_number(ord_dots)
+    return adjusted_dots
 
 
-def textToDots(text):
+def text_to_dots(text):
     """Convert text to braille dots array"""
-    translatedText = louis.translateString(translationList(), text)
-    printProperty("translatedText", translatedText)
+    translated_text = louis.translateString(translation_list(), text)
+    print_property("translatedText", translated_text)
 
-    translatedTextArray = list(translatedText)
-    printProperty("translatedTextArray", str(translatedTextArray))
+    translated_text_array = list(translated_text)
+    print_property("translatedTextArray", str(translated_text_array))
 
-    dotsArray = list(map(charToDots, translatedTextArray))
-    printProperty("dotsArray", str(dotsArray))
+    dots_array = list(map(char_to_dots, translated_text_array))
+    print_property("dotsArray", str(dots_array))
 
-    return bytes(dotsArray)
+    return bytes(dots_array)
 
 
-def dotsToDisplaySize(dots, size):
+def dots_to_display_size(dots, size):
     """Adjust dots array to display size"""
-    dotsLength = len(dots)
+    dots_length = len(dots)
     cells = []
     for i in range(0, size):  # it must be the length of the display
-        if i < dotsLength:
+        if i < dots_length:
             cells.append(dots[i])
         else:
             cells.append(0)
     return bytes(cells)
 
 
-def digitDots(i):
+def digit_dots(i):
     """Convert digit (0-9) to braille dots"""
     if i == 0:
         dots = brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6
@@ -161,7 +160,7 @@ def units(i):
 # Display utilities
 # ============================================================================
 
-def fullCell():
+def full_cell():
     """Get a full braille cell with all dots"""
     return (
         brlapi.DOT1
@@ -175,87 +174,86 @@ def fullCell():
     )
 
 
-def underlineCell():
+def underline_cell():
     """Get underline character for braille display"""
     return chr(brlapi.DOT7 + brlapi.DOT8)
 
 
-def placeCursor(dots, cursorPosition):
+def place_cursor(dots, cursor_position):
     """Place cursor at specified position in dots array"""
-    dotsLength = len(dots)
+    dots_length = len(dots)
     cells = []
-    for i in range(0, dotsLength):
-        if i == cursorPosition:
+    for i in range(0, dots_length):
+        if i == cursor_position:
             cells.append(dots[i] | brlapi.DOT7 | brlapi.DOT8)
         else:
             cells.append(dots[i])
     return bytes(cells)
 
 
-def adjustDots(d):
-    """Adjust dots by adding offset (inverse of adjustNumber)"""
+def adjust_dots(d):
+    """Adjust dots by adding offset (inverse of adjust_number)"""
     return d | 0x8000
 
 
-def dotsToChar(modifier, dots):
+def dots_to_char(modifier, dots):
     """Convert braille dots back to character with optional modifier"""
     def helper(dots):
-        adjustedNumber = adjustDots(dots)
-        chrNumber = chr(adjustedNumber)
-        louisChars = louis.dotsToChar(translationList(), chrNumber)
-        return louisChars
+        adjusted_number = adjust_dots(dots)
+        chr_number = chr(adjusted_number)
+        louis_chars = louis.dotsToChar(translation_list(), chr_number)
+        return louis_chars
 
     if modifier > 0:
-        louisChars = helper(modifier) + helper(dots)
-        text = louis.backTranslateString(translationList(), louisChars)
+        louis_chars = helper(modifier) + helper(dots)
+        text = louis.backTranslateString(translation_list(), louis_chars)
         chars = text[0]
         return chars
-    else:
-        louisChars = helper(dots)
-        text = louis.backTranslateString(translationList(), louisChars)
-        chars = text[0]
-        return chars
+
+    louis_chars = helper(dots)
+    text = louis.backTranslateString(translation_list(), louis_chars)
+    chars = text[0]
+    return chars
 
 
 # ============================================================================
 # Connection and error handling utilities
 # ============================================================================
 
-def handleConnectionError(e):
+def handle_connection_error(e):
     """Handle BrlAPI connection errors with appropriate messages"""
     if e.brlerrno == brlapi.ERROR_CONNREFUSED:
-        printProperty(
+        print_property(
             "Connection refused",
-            "Connection to %s refused. BRLTTY is too busy..." % (e.host),
+            f"Connection to {e.host} refused. BRLTTY is too busy...",
         )
     elif e.brlerrno == brlapi.ERROR_AUTHENTICATION:
-        printProperty(
+        print_property(
             "Authentication failed.",
-            "Authentication with %s failed. Please check the permissions of %s"
-            % (e.host, e.auth),
+            f"Authentication with {e.host} failed. Please check the permissions of {e.auth}",
         )
     elif e.brlerrno == brlapi.ERROR_LIBCERR:
         import errno as err
-        if e.libcerrno == err.ECONNREFUSED or e.libcerrno == err.ENOENT:
-            printProperty(
+        if e.libcerrno in (err.ECONNREFUSED, err.ENOENT):
+            print_property(
                 "Connection failed",
-                "Connection to %s failed. Is BRLTTY really running?" % (e.host),
+                f"Connection to {e.host} failed. Is BRLTTY really running?",
             )
     else:
-        printProperty(
+        print_property(
             "Connection to BRLTTY failed",
-            "Connection to BRLTTY at %s failed: " % (e.host),
+            f"Connection to BRLTTY at {e.host} failed: ",
         )
-    printProperty("error", str(e))
-    printProperty("error.brlerrno", str(e.brlerrno))
-    printProperty("error.libcerrno", str(e.libcerrno))
+    print_property("error", str(e))
+    print_property("error.brlerrno", str(e.brlerrno))
+    print_property("error.libcerrno", str(e.libcerrno))
 
 
-def checkDisplayConnected(brl):
+def check_display_connected(brl):
     """Check if a braille display is actually connected"""
     if brl.displaySize[0] == 0 or brl.displaySize[1] == 0:
-        printProperty("WARNING", "No braille display detected! (displaySize is 0)")
-        printProperty(
+        print_property("WARNING", "No braille display detected! (displaySize is 0)")
+        print_property(
             "Info",
             "The driver name may show a configured driver, but no physical device is connected.",
         )
@@ -267,16 +265,16 @@ def checkDisplayConnected(brl):
 # Key handling utilities
 # ============================================================================
 
-def writeProperty(name, value):
-    """Alternative name for printProperty (used in some examples)"""
-    printProperty(name, value)
+def write_property(name, value):
+    """Alternative name for print_property (used in some examples)"""
+    print_property(name, value)
 
 
 # ============================================================================
 # Braille character utilities
 # ============================================================================
 
-def charToBrailleDots(char):
+def char_to_braille_dots(char):
     """
     Convert a-z character to braille dot pattern (Grade 1 Braille)
     Returns integer with bits set for dots 1-6
@@ -311,14 +309,15 @@ def charToBrailleDots(char):
         'x': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6,
         'y': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6,
         'z': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6,
+        'é': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6,  # Full cell
     }
     
     return braille_map.get(char, 0)
 
 
-def brailleDotsToChar(dots):
+def braille_dots_to_char(dots):
     """
-    Convert braille dot pattern back to character (inverse of charToBrailleDots)
+    Convert braille dot pattern back to character (inverse of char_to_braille_dots)
     Returns the character or '?' if not found
     """
     # Reverse mapping
@@ -354,7 +353,7 @@ def brailleDotsToChar(dots):
     return reverse_map.get(dots, '?')
 
 
-def combineKeysToDots(dot_list):
+def combine_keys_to_dots(dot_list):
     """
     Combine list of dot numbers (1-6) into braille dot pattern
     Example: [1, 3, 4, 6] -> DOT1|DOT3|DOT4|DOT6
@@ -380,13 +379,13 @@ def combineKeysToDots(dot_list):
 # Random utilities
 # ============================================================================
 
-def randomChar():
+def random_char():
     """Get a random lowercase letter a-z"""
     import random
     return random.choice('abcdefghijklmnopqrstuvwxyz')
 
 
-def randomPosition(max_position):
+def random_position(max_position):
     """Get a random position from 0 to max_position-1"""
     import random
     return random.randint(0, max_position - 1)

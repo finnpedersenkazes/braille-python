@@ -8,46 +8,46 @@ from datetime import datetime
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from library import (
-    formatTimeStamp,
-    adjustNumber,
-    dotsToDisplaySize,
-    digitDots,
+    format_time_stamp,
+    adjust_number,
+    dots_to_display_size,
+    digit_dots,
     tens,
     units,
-    fullCell,
-    underlineCell,
-    placeCursor,
-    adjustDots,
-    checkDisplayConnected,
-    charToBrailleDots,
-    brailleDotsToChar,
-    combineKeysToDots,
-    randomChar,
-    randomPosition,
+    full_cell,
+    underline_cell,
+    place_cursor,
+    adjust_dots,
+    check_display_connected,
+    char_to_braille_dots,
+    braille_dots_to_char,
+    combine_keys_to_dots,
+    random_char,
+    random_position,
 )
 
 
 def test_format_timestamp():
     """Test timestamp formatting for filenames"""
     dt = datetime(2024, 1, 15, 14, 30, 45)
-    result = formatTimeStamp(dt)
+    result = format_time_stamp(dt)
     assert result == "2024-01-15T14-30"
 def test_adjust_number():
     """Test number adjustment for braille translation"""
-    assert adjustNumber(32768) == 0
-    assert adjustNumber(32769) == 1
-    assert adjustNumber(32800) == 32
+    assert adjust_number(32768) == 0
+    assert adjust_number(32769) == 1
+    assert adjust_number(32800) == 32
 
 
 def test_dots_to_display_size():
     """Test padding dots array to display size"""
     dots = bytes([1, 2, 3])
-    result = dotsToDisplaySize(dots, 5)
+    result = dots_to_display_size(dots, 5)
     assert result == bytes([1, 2, 3, 0, 0])
     
     # Test when dots longer than size
     dots = bytes([1, 2, 3, 4, 5])
-    result = dotsToDisplaySize(dots, 3)
+    result = dots_to_display_size(dots, 3)
     assert result == bytes([1, 2, 3])
 
 
@@ -56,21 +56,21 @@ def test_digit_dots():
     import brlapi
     
     # Test digit 0
-    result = digitDots(0)
+    result = digit_dots(0)
     expected = brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6
     assert result == expected
     
     # Test digit 1
-    result = digitDots(1)
+    result = digit_dots(1)
     expected = brlapi.DOT1 | brlapi.DOT6
     assert result == expected
     
     # Test invalid digit
-    result = digitDots(10)
+    result = digit_dots(10)
     assert result == 0
     
     # Test negative
-    result = digitDots(-1)
+    result = digit_dots(-1)
     assert result == 0
 
 
@@ -96,7 +96,7 @@ def test_units():
 def test_full_cell():
     """Test full braille cell generation"""
     import brlapi
-    result = fullCell()
+    result = full_cell()
     expected = (
         brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 |
         brlapi.DOT5 | brlapi.DOT6 | brlapi.DOT7 | brlapi.DOT8
@@ -107,7 +107,7 @@ def test_full_cell():
 def test_underline_cell():
     """Test underline cell generation"""
     import brlapi
-    result = underlineCell()
+    result = underline_cell()
     expected = chr(brlapi.DOT7 + brlapi.DOT8)
     assert result == expected
 
@@ -116,7 +116,7 @@ def test_place_cursor():
     """Test cursor placement in dots array"""
     import brlapi
     dots = bytes([10, 20, 30, 40])
-    result = placeCursor(dots, 2)
+    result = place_cursor(dots, 2)
     
     # Third element should have DOT7 and DOT8 added
     expected = bytes([
@@ -129,9 +129,9 @@ def test_place_cursor():
 
 
 def test_adjust_dots():
-    """Test dots adjustment (inverse of adjustNumber)"""
-    assert adjustDots(0) == 0x8000
-    assert adjustDots(1) == 0x8001
+    """Test dots adjustment (inverse of adjust_number)"""
+    assert adjust_dots(0) == 0x8000
+    assert adjust_dots(1) == 0x8001
 
 
 def test_check_display_connected():
@@ -141,15 +141,15 @@ def test_check_display_connected():
     # Mock connected display
     brl = Mock()
     brl.displaySize = (20, 1)
-    assert checkDisplayConnected(brl) is True
+    assert check_display_connected(brl) is True
     
     # Mock disconnected display (width = 0)
     brl.displaySize = (0, 0)
-    assert checkDisplayConnected(brl) is False
+    assert check_display_connected(brl) is False
     
     # Mock disconnected display (height = 0)
     brl.displaySize = (20, 0)
-    assert checkDisplayConnected(brl) is False
+    assert check_display_connected(brl) is False
 
 
 def test_char_to_braille_dots():
@@ -157,18 +157,18 @@ def test_char_to_braille_dots():
     import brlapi
     
     # Test lowercase letters
-    assert charToBrailleDots('a') == brlapi.DOT1
-    assert charToBrailleDots('b') == brlapi.DOT1 | brlapi.DOT2
-    assert charToBrailleDots('x') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6
-    assert charToBrailleDots('z') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6
+    assert char_to_braille_dots('a') == brlapi.DOT1
+    assert char_to_braille_dots('b') == brlapi.DOT1 | brlapi.DOT2
+    assert char_to_braille_dots('x') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6
+    assert char_to_braille_dots('z') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6
     
     # Test uppercase (should convert to lowercase)
-    assert charToBrailleDots('A') == brlapi.DOT1
-    assert charToBrailleDots('Z') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6
+    assert char_to_braille_dots('A') == brlapi.DOT1
+    assert char_to_braille_dots('Z') == brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6
     
-    # Test invalid character
-    assert charToBrailleDots('1') == 0
-    assert charToBrailleDots('?') == 0
+    # Test non-alphabet characters (should return 0)
+    assert char_to_braille_dots('1') == 0
+    assert char_to_braille_dots('?') == 0
 
 
 def test_braille_dots_to_char():
@@ -176,13 +176,13 @@ def test_braille_dots_to_char():
     import brlapi
     
     # Test basic conversions
-    assert brailleDotsToChar(brlapi.DOT1) == 'a'
-    assert brailleDotsToChar(brlapi.DOT1 | brlapi.DOT2) == 'b'
-    assert brailleDotsToChar(brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6) == 'x'
+    assert braille_dots_to_char(brlapi.DOT1) == 'a'
+    assert braille_dots_to_char(brlapi.DOT1 | brlapi.DOT2) == 'b'
+    assert braille_dots_to_char(brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6) == 'x'
     
     # Test invalid dots
-    assert brailleDotsToChar(0) == '?'
-    assert brailleDotsToChar(brlapi.DOT7 | brlapi.DOT8) == '?'
+    assert braille_dots_to_char(0) == '?'
+    assert braille_dots_to_char(brlapi.DOT7 | brlapi.DOT8) == '?'
 
 
 def test_combine_keys_to_dots():
@@ -190,30 +190,30 @@ def test_combine_keys_to_dots():
     import brlapi
     
     # Test single dot
-    assert combineKeysToDots([1]) == brlapi.DOT1
+    assert combine_keys_to_dots([1]) == brlapi.DOT1
     
     # Test multiple dots
-    result = combineKeysToDots([1, 3, 4, 6])
+    result = combine_keys_to_dots([1, 3, 4, 6])
     expected = brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6
     assert result == expected
     
     # Test all dots 1-6
-    result = combineKeysToDots([1, 2, 3, 4, 5, 6])
+    result = combine_keys_to_dots([1, 2, 3, 4, 5, 6])
     expected = brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6
     assert result == expected
     
     # Test empty list
-    assert combineKeysToDots([]) == 0
+    assert combine_keys_to_dots([]) == 0
     
     # Test invalid dot numbers (should be ignored)
-    assert combineKeysToDots([1, 7, 8]) == brlapi.DOT1
+    assert combine_keys_to_dots([1, 7, 8]) == brlapi.DOT1
 
 
 def test_random_char():
     """Test random character generation"""
     # Test it returns a lowercase letter
     for _ in range(10):
-        char = randomChar()
+        char = random_char()
         assert len(char) == 1
         assert char.islower()
         assert char.isalpha()
@@ -224,10 +224,10 @@ def test_random_position():
     """Test random position generation"""
     # Test it returns position in range
     for _ in range(10):
-        pos = randomPosition(20)
+        pos = random_position(20)
         assert 0 <= pos < 20
         assert isinstance(pos, int)
     
     # Test with small max
-    pos = randomPosition(1)
+    pos = random_position(1)
     assert pos == 0

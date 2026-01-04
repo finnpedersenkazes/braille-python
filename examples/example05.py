@@ -14,15 +14,15 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from library import (
-    printProperty,
-    printDiagnostics,
-    currentDateTime,
-    handleConnectionError,
-    textToDots,
-    dotsToDisplaySize,
+    print_property,
+    print_diagnostics,
+    CURRENT_DATE_TIME,
+    handle_connection_error,
+    text_to_dots,
+    dots_to_display_size,
     tens,
     units,
-    digitDots,
+    digit_dots,
 )
 
 
@@ -30,7 +30,7 @@ from library import (
 # Model - Game state initialization and messages
 # ============================================================================
 
-def getMessage(displayWidth, language, code):
+def get_message(display_width, language, code):
     """Get localized message based on language and code"""
     if code == "start":
         if language == "fr":
@@ -77,49 +77,49 @@ def init(brl):
         "text": "",
         "language": language,
         "displayWidth": displayWidth,
-        "message": getMessage(displayWidth, language, "start"),
+        "message": get_message(displayWidth, language, "start"),
         "pointBlocks": pointBlocks,
         "gameBlocks": numberOfBlocks - pointBlocks,
         "gameDuration": 30,  # seconds
     }
 
 
-def printLog(m):
+def print_log(m):
     """Print model state to log"""
     if m["counter"] == 0:
-        printProperty("LOG", "Program Initialized")
-        printProperty("Counter", str(m["counter"]))
-        printProperty("Message", m["message"])
-        printProperty("Language", m["language"])
-        printProperty("Display Width", str(m["displayWidth"]))
-        printProperty("Point Blocks", str(m["pointBlocks"]))
-        printProperty("Game Blocks", str(m["gameBlocks"]))
-        printProperty("Game Duration", str(m["gameDuration"]))
+        print_property("LOG", "Program Initialized")
+        print_property("Counter", str(m["counter"]))
+        print_property("Message", m["message"])
+        print_property("Language", m["language"])
+        print_property("Display Width", str(m["displayWidth"]))
+        print_property("Point Blocks", str(m["pointBlocks"]))
+        print_property("Game Blocks", str(m["gameBlocks"]))
+        print_property("Game Duration", str(m["gameDuration"]))
     else:
-        printProperty("LOG", "Program Started")
+        print_property("LOG", "Program Started")
         if "code" in m:
-            printProperty("Code", str(m["code"]))
-            printProperty("Type", str(m["type"]))
-            printProperty("Command", str(m["command"]))
-            printProperty("Argument", str(m["argument"]))
-            printProperty("Flags", str(m["flags"]))
-            printProperty("Counter", str(m["counter"]))
-        printProperty("Message", m["message"])
-        printProperty("Text", m["text"])
-        printProperty("Cursor Position", str(m["cursorPos"]))
-        printProperty("Obstacle Posistion", str(m["obstaclePos"]))
-        printProperty("Points", str(m["points"]))
-        printProperty("Game Counter", str(m["gameCounter"]))
-        printProperty("High Score", str(m["highScore"]))
+            print_property("Code", str(m["code"]))
+            print_property("Type", str(m["type"]))
+            print_property("Command", str(m["command"]))
+            print_property("Argument", str(m["argument"]))
+            print_property("Flags", str(m["flags"]))
+            print_property("Counter", str(m["counter"]))
+        print_property("Message", m["message"])
+        print_property("Text", m["text"])
+        print_property("Cursor Position", str(m["cursorPos"]))
+        print_property("Obstacle Posistion", str(m["obstaclePos"]))
+        print_property("Points", str(m["points"]))
+        print_property("Game Counter", str(m["gameCounter"]))
+        print_property("High Score", str(m["highScore"]))
 
-    printProperty("-------", "-------------------------")
+    print_property("-------", "-------------------------")
 
 
 # ============================================================================
 # Update - Game logic and state updates
 # ============================================================================
 
-def cursorUp(position):
+def cursor_up(position):
     """Move cursor up, legal positions: 0..3, blocked"""
     if position > 2:
         position = 2
@@ -128,7 +128,7 @@ def cursorUp(position):
     return position + 1
 
 
-def cursorDown(position):
+def cursor_down(position):
     """Move cursor down, legal positions: 0..3, blocked"""
     if position > 3:
         position = 3
@@ -137,7 +137,7 @@ def cursorDown(position):
     return position - 1
 
 
-def obstacleAdvance(position):
+def obstacle_advance(position):
     """Advance obstacle position, legal positions: 0..9, revolving"""
     if position > 9:
         position = 9
@@ -146,7 +146,7 @@ def obstacleAdvance(position):
     return position - 1
 
 
-def collisionDetection(m):
+def collision_detection(m):
     """Detect collision between cursor and obstacle"""
     if ("cursorPos" in m) and ("obstaclePos" in m):
         m["collision"] = (m["cursorPos"] in [0, 1]) and (m["obstaclePos"] in [2, 3, 4])
@@ -155,7 +155,7 @@ def collisionDetection(m):
     return m
 
 
-def pointsCalculation(m):
+def points_calculation(m):
     """Calculate points based on collision and obstacle position"""
     if m["obstaclePos"] == 4:
         if m["collision"]:
@@ -169,14 +169,14 @@ def pointsCalculation(m):
     return m
 
 
-def timeUpDetection(m):
+def time_up_detection(m):
     """Check if game time is up"""
     if time.time() - m["gameStartedAt"] > m["gameDuration"]:
         m["stop"] = True
     return m
 
 
-def updateByGameStart(m):
+def update_by_game_start(m):
     """Update the model at game start"""
     m["gameStartedAt"] = time.time()
     m["stop"] = False
@@ -184,48 +184,48 @@ def updateByGameStart(m):
     return m
 
 
-def updateByGameEnd(m):
+def update_by_game_end(m):
     """Update the model at game end"""
     if m["points"] > m["highScore"]:
         m["highScore"] = m["points"]
     m["gameCounter"] = m["gameCounter"] + 1
     m["message"] = (
-        getMessage(m["displayWidth"], m["language"], "points") + " " + str(m["points"])
+        get_message(m["displayWidth"], m["language"], "points") + " " + str(m["points"])
     )
     return m
 
 
-def updateHighScoreMessage(m):
+def update_high_score_message(m):
     """Update the High score message"""
     m["message"] = (
-        getMessage(m["displayWidth"], m["language"], "highscore")
+        get_message(m["displayWidth"], m["language"], "highscore")
         + " "
         + str(m["highScore"])
     )
     return m
 
 
-def updateByTime(m):
+def update_by_time(m):
     """Update the model because time passed"""
     m["message"] = "Time flies when you are having fun"
 
     m["counter"] = m["counter"] + 1
     if m["counter"] % 2 == 0:
-        m["obstaclePos"] = obstacleAdvance(m["obstaclePos"])
-        m = collisionDetection(m)
-        m = pointsCalculation(m)
+        m["obstaclePos"] = obstacle_advance(m["obstaclePos"])
+        m = collision_detection(m)
+        m = points_calculation(m)
     if m["obstaclePos"] == 1:
         m["cursorPos"] = 0
 
-    m = timeUpDetection(m)
+    m = time_up_detection(m)
     return m
 
 
-def updateByKey(brl, m, keyCode):
+def update_by_key(brl, m, key_code):
     """Update the model based on the key pressed"""
     # Keep information about the key pressed in the model
-    k = brl.expandKeyCode(keyCode)
-    m["code"] = "0X%X" % keyCode
+    k = brl.expandKeyCode(key_code)
+    m["code"] = "0X%X" % key_code
     m["type"] = k["type"]
     m["command"] = k["command"]
     m["argument"] = k["argument"]
@@ -236,13 +236,13 @@ def updateByKey(brl, m, keyCode):
 
     # Update the model
     m["counter"] = m["counter"] + 1
-    if keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME:
+    if key_code == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME:
         m["message"] = "Home Button"
         m["stop"] = True
-    elif keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNUP:
+    elif key_code == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNUP:
         m["message"] = "Line Up"
-        m["cursorPos"] = cursorUp(m["cursorPos"])
-    elif keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNDN:
+        m["cursorPos"] = cursor_up(m["cursorPos"])
+    elif key_code == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNDN:
         m["stop"] = True
     elif (
         (m["type"] == 536870912) and (m["command"] == 2228224) and (m["argument"] == 0)
@@ -251,12 +251,12 @@ def updateByKey(brl, m, keyCode):
         if m["cursorPos"] == 3:
             m["cursorPos"] = 0
         else:
-            m["cursorPos"] = cursorUp(m["cursorPos"])
+            m["cursorPos"] = cursor_up(m["cursorPos"])
     else:
         m["message"] = "Unknown key"
 
-    m = collisionDetection(m)
-    m = timeUpDetection(m)
+    m = collision_detection(m)
+    m = time_up_detection(m)
     return m
 
 
@@ -264,15 +264,15 @@ def updateByKey(brl, m, keyCode):
 # View - Game rendering
 # ============================================================================
 
-def messageToDisplay(m):
-    """Convert message to display format"""
+def message_to_display(m):
+    """Convert message to braille dots for display"""
     text = m["message"]
-    dots = textToDots(text)
-    dots = dotsToDisplaySize(dots, m["displayWidth"])
+    dots = text_to_dots(text)
+    dots = dots_to_display_size(dots, m["displayWidth"])
     return dots
 
 
-def gameToDots(m):
+def game_to_dots(m):
     """Convert game state to braille dots for display"""
     cells = []
 
@@ -364,14 +364,14 @@ def gameToDots(m):
 
 def view(brl, m):
     """Visualize the model on the braille display"""
-    printLog(m)
+    print_log(m)
     if m["displayWidth"] == 0:
         print("Warning: No braille display detected. Skipping writeDots.")
         return
     if (m["counter"] == 0) or m["stop"]:
-        brl.writeDots(messageToDisplay(m))
+        brl.writeDots(message_to_display(m))
     else:
-        brl.writeDots(gameToDots(m))
+        brl.writeDots(game_to_dots(m))
 
 
 # ============================================================================
@@ -381,36 +381,36 @@ def view(brl, m):
 def main():
     """Main game loop"""
     try:
-        printProperty("Initialization", "Before Connection")
+        print_property("Initialization", "Before Connection")
         # Initialization
         b = brlapi.Connection()
         b.enterTtyModeWithPath()
         b.acceptKeys(brlapi.rangeType_all, [0])
-        printDiagnostics(b)
+        print_diagnostics(b)
 
         # The architecture
         model = init(b)
         view(b, model)
         delay = 0.1  # seconds
-        waitForKeyPress = True
+        wait_for_key_press = True
         for _ in range(0, 1):  # TODO change to 3
-            key = b.readKey(waitForKeyPress)
-            model = updateByGameStart(model)
+            key = b.readKey(wait_for_key_press)
+            model = update_by_game_start(model)
             while not model["stop"]:
-                key = b.readKey(not waitForKeyPress)
+                key = b.readKey(not wait_for_key_press)
                 if not key:
                     time.sleep(delay)
-                    model = updateByTime(model)
+                    model = update_by_time(model)
                 else:
-                    model = updateByKey(b, model, key)
+                    model = update_by_key(b, model, key)
 
                 view(b, model)
 
-            model = updateByGameEnd(model)
+            model = update_by_game_end(model)
             view(b, model)
             time.sleep(10)
 
-        model = updateHighScoreMessage(model)
+        model = update_high_score_message(model)
         view(b, model)
         time.sleep(10)
 
@@ -419,7 +419,7 @@ def main():
 
     # Error Handling
     except brlapi.ConnectionError as e:
-        handleConnectionError(e)
+        handle_connection_error(e)
 
 
 if __name__ == "__main__":

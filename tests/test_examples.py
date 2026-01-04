@@ -18,7 +18,8 @@ class TestExampleStructure:
         'example02c',
         'example04',
         'example05',
-        'example06'
+        'example06',
+        'example07'
     ]
     
     @pytest.mark.parametrize("example_name", examples)
@@ -106,8 +107,8 @@ class TestExample04Series:
         assert hasattr(example04, 'main')
         assert hasattr(example04, 'init')
         assert hasattr(example04, 'view')
-        assert hasattr(example04, 'updateByKey')
-        assert hasattr(example04, 'updateByTime')
+        assert hasattr(example04, 'update_by_key')
+        assert hasattr(example04, 'update_by_time')
 
 
 class TestExample05:
@@ -125,14 +126,14 @@ class TestExample05:
         # Check for Elm architecture components
         assert hasattr(example05, 'init')
         assert hasattr(example05, 'view')
-        assert hasattr(example05, 'updateByTime')
-        assert hasattr(example05, 'updateByKey')
+        assert hasattr(example05, 'update_by_time')
+        assert hasattr(example05, 'update_by_key')
         
         # Check these are callable
         assert callable(example05.init)
         assert callable(example05.view)
-        assert callable(example05.updateByTime)
-        assert callable(example05.updateByKey)
+        assert callable(example05.update_by_time)
+        assert callable(example05.update_by_key)
 
 
 class TestExample06:
@@ -161,6 +162,82 @@ class TestExample06:
         assert callable(example06.update_by_game_start)
 
 
+class TestExample07:
+    """Test example07 (navigate lines and feel the dots)"""
+
+    def test_example07_structure(self):
+        """Test example07 has correct structure"""
+        import example07
+        assert hasattr(example07, 'main')
+
+    def test_example07_elm_architecture(self):
+        """Verify example07 uses Elm architecture"""
+        import example07
+        
+        # Check for Elm architecture components
+        assert hasattr(example07, 'init')
+        assert hasattr(example07, 'view')
+        assert hasattr(example07, 'update_by_key')
+        assert hasattr(example07, 'update_by_line_up')
+        assert hasattr(example07, 'update_by_line_down')
+        
+        # Check these are callable
+        assert callable(example07.init)
+        assert callable(example07.view)
+        assert callable(example07.update_by_key)
+        assert callable(example07.update_by_line_up)
+        assert callable(example07.update_by_line_down)
+
+    def test_example07_pattern_generation(self):
+        """Test pattern generation functions"""
+        import example07
+        
+        # Test filled pattern
+        filled = example07.create_filled_pattern('a', 5)
+        assert len(filled) == 5
+        assert all(cell == filled[0] for cell in filled)  # All cells same
+        
+        # Test alternating pattern
+        alternating = example07.create_alternating_pattern('a', 6)
+        assert len(alternating) == 6
+        # Even indices should have character, odd should be blank
+        for i in range(6):
+            if i % 2 == 0:
+                assert alternating[i] != 0  # Character
+            else:
+                assert alternating[i] == 0  # Space
+
+    def test_example07_line_wrapping(self):
+        """Test line navigation wrapping logic"""
+        import example07
+        
+        # Mock model
+        model = {
+            'current_line': 1,
+            'total_lines': 9,
+            'counter': 0
+        }
+        
+        # Test wrap from line 1 to line 9 (going up)
+        model['current_line'] = 1
+        model = example07.update_by_line_up(model)
+        assert model['current_line'] == 9
+        
+        # Test wrap from line 9 to line 1 (going down)
+        model['current_line'] = 9
+        model = example07.update_by_line_down(model)
+        assert model['current_line'] == 1
+        
+        # Test normal navigation
+        model['current_line'] = 5
+        model = example07.update_by_line_up(model)
+        assert model['current_line'] == 4
+        
+        model['current_line'] = 5
+        model = example07.update_by_line_down(model)
+        assert model['current_line'] == 6
+
+
 class TestExampleSyntax:
     """Test that all examples have valid Python syntax"""
 
@@ -172,7 +249,7 @@ class TestExampleSyntax:
         example_files = [
             'example01.py',
             'example02.py', 'example02a.py', 'example02b.py', 'example02c.py',
-            'example04.py', 'example05.py', 'example06.py'
+            'example04.py', 'example05.py', 'example06.py', 'example07.py'
         ]
         
         for filename in example_files:

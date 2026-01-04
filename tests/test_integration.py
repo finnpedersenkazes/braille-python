@@ -60,8 +60,8 @@ class TestElmArchitecture(unittest.TestCase):
         
         # Check for init, update, view pattern
         self.assertTrue(hasattr(example05, 'init'))
-        self.assertTrue(hasattr(example05, 'updateByTime'))
-        self.assertTrue(hasattr(example05, 'updateByKey'))
+        self.assertTrue(hasattr(example05, 'update_by_time'))
+        self.assertTrue(hasattr(example05, 'update_by_key'))
         self.assertTrue(hasattr(example05, 'view'))
         
         # Test init returns a dictionary (model)
@@ -81,7 +81,7 @@ class TestElmArchitecture(unittest.TestCase):
         
         # Check for init, update, view pattern
         self.assertTrue(hasattr(example04, 'init'))
-        self.assertTrue(hasattr(example04, 'updateByKey'))
+        self.assertTrue(hasattr(example04, 'update_by_key'))
         self.assertTrue(hasattr(example04, 'view'))
         
         # Test init returns a model

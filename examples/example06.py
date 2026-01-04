@@ -38,17 +38,17 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # pylint: disable=wrong-import-position,import-error
 from library import (
-    printProperty,
-    printDiagnostics,
-    handleConnectionError,
-    digitDots,
+    print_property,
+    print_diagnostics,
+    handle_connection_error,
+    digit_dots,
     tens,
     units,
-    charToBrailleDots,
-    combineKeysToDots,
-    randomChar,
-    randomPosition,
-    dotsToDisplaySize,
+    char_to_braille_dots,
+    combine_keys_to_dots,
+    random_char,
+    random_position,
+    dots_to_display_size,
 )
 
 
@@ -83,11 +83,11 @@ def get_message(code, **params):
 def generate_challenge(display_width):
     """Generate new random character and position for challenge"""
     # Pick random character (a-z)
-    target_char = randomChar()
+    target_char = random_char()
 
     # Pick random position in game area (last 5 cells reserved for score)
     game_width = display_width - 5
-    target_position = randomPosition(game_width)
+    target_position = random_position(game_width)
 
     return target_char, target_position
 
@@ -113,22 +113,22 @@ def init(brl):
 
 def print_log(m):
     """Print model state to log"""
-    printProperty("LOG", f"Phase: {m['currentPhase']}")
-    printProperty("Counter", str(m["counter"]))
-    printProperty("Message", m["message"])
+    print_property("LOG", f"Phase: {m['currentPhase']}")
+    print_property("Counter", str(m["counter"]))
+    print_property("Message", m["message"])
 
     if m["gameStarted"]:
-        printProperty("Target Char", m["targetChar"])
-        printProperty("Target Position", str(m["targetPosition"]))
-        printProperty("Score", str(m["score"]))
-        printProperty("Attempts", str(m["attempts"]))
+        print_property("Target Char", m["targetChar"])
+        print_property("Target Position", str(m["targetPosition"]))
+        print_property("Score", str(m["score"]))
+        print_property("Attempts", str(m["attempts"]))
 
         if m["selectedPosition"] is not None:
-            printProperty("Selected Position", str(m["selectedPosition"]))
+            print_property("Selected Position", str(m["selectedPosition"]))
         if m["selectedDots"]:
-            printProperty("Selected Dots", str(m["selectedDots"]))
+            print_property("Selected Dots", str(m["selectedDots"]))
 
-    printProperty("-------", "-------------------------")
+    print_property("-------", "-------------------------")
 
 
 # ============================================================================
@@ -229,8 +229,8 @@ def update_by_submit(m):
             return m
 
         # Check dots
-        user_dots = combineKeysToDots(m["selectedDots"])
-        target_dots = charToBrailleDots(m["targetChar"])
+        user_dots = combine_keys_to_dots(m["selectedDots"])
+        target_dots = char_to_braille_dots(m["targetChar"])
 
         m["attempts"] += 1
 
@@ -295,8 +295,8 @@ def score_to_display(score):
     cells.append(0)  # blank
     cells.append(0)  # blank
     cells.append(brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4)  # p
-    cells.append(digitDots(tens(score)))
-    cells.append(digitDots(units(score)))
+    cells.append(digit_dots(tens(score)))
+    cells.append(digit_dots(units(score)))
     return cells
 
 
@@ -308,7 +308,7 @@ def challenge_to_display(m):
     game_width = m["displayWidth"] - 5
     for i in range(game_width):
         if i == m["targetPosition"]:
-            cells.append(charToBrailleDots(m["targetChar"]))
+            cells.append(char_to_braille_dots(m["targetChar"]))
         else:
             # Fill with blank
             cells.append(0)
@@ -344,7 +344,7 @@ def view(brl, m):
         return
 
     dots = game_to_dots(m)
-    dots = dotsToDisplaySize(dots, m["displayWidth"])
+    dots = dots_to_display_size(dots, m["displayWidth"])
     brl.writeDots(dots)
 
 
@@ -361,7 +361,7 @@ def main():
         b = brlapi.Connection()
         b.enterTtyModeWithPath()
         b.acceptKeys(brlapi.rangeType_all, [0])
-        printDiagnostics(b)
+        print_diagnostics(b)
 
         # The architecture
         model = init(b)
@@ -389,7 +389,7 @@ def main():
         b.closeConnection()
 
     except brlapi.ConnectionError as e:
-        handleConnectionError(e)
+        handle_connection_error(e)
 
 
 if __name__ == "__main__":

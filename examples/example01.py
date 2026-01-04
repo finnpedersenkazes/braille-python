@@ -11,38 +11,38 @@ import errno
 import Xlib.keysymdef.miscellany
 
 
-def writeProperty(name, value):
+def write_property(name, value):
     """Print a property in a structured format"""
     print(f"{name}: {value}")
 
 
 def print_diagnostics(brl):
     """Display braille display connection information"""
-    writeProperty("File Descriptor", str(brl.fileDescriptor))
-    writeProperty("Server Host", str(brl.host))
-    writeProperty("Authorization Schemes", str(brl.auth))
-    writeProperty("Driver Name", str(brl.driverName))
-    writeProperty("Model Identifier", str(brl.modelIdentifier))
-    writeProperty("Display Width", str(brl.displaySize[0]))
-    writeProperty("Display Height", str(brl.displaySize[1]))
-    writeProperty("-------", "-------------------------")
+    write_property("File Descriptor", str(brl.fileDescriptor))
+    write_property("Server Host", str(brl.host))
+    write_property("Authorization Schemes", str(brl.auth))
+    write_property("Driver Name", str(brl.driverName))
+    write_property("Model Identifier", str(brl.modelIdentifier))
+    write_property("Display Width", str(brl.displaySize[0]))
+    write_property("Display Height", str(brl.displaySize[1]))
+    write_property("-------", "-------------------------")
 
 
 def print_log(m):
     """Log current model state"""
     if m["counter"] == 0:
-        writeProperty("LOG", "Program Initialized")
-        writeProperty("Message", m["message"])
+        write_property("LOG", "Program Initialized")
+        write_property("Message", m["message"])
     else:
-        writeProperty("LOG", f"Key Press #{m['counter']}")
-        writeProperty("Code", m["code"])
-        writeProperty("Type", hex(m["type"]))
-        writeProperty("Command", hex(m["command"]))
-        writeProperty("Argument", hex(m["argument"]))
-        writeProperty("Flags", hex(m["flags"]))
-        writeProperty("Message", m["message"])
-        writeProperty("Text", m["text"])
-    writeProperty("-------", "-------------------------")
+        write_property("LOG", f"Key Press #{m['counter']}")
+        write_property("Code", m["code"])
+        write_property("Type", hex(m["type"]))
+        write_property("Command", hex(m["command"]))
+        write_property("Argument", hex(m["argument"]))
+        write_property("Flags", hex(m["flags"]))
+        write_property("Message", m["message"])
+        write_property("Text", m["text"])
+    write_property("-------", "-------------------------")
 
 
 def init():
