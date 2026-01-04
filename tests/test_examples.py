@@ -23,6 +23,7 @@ class TestExampleStructure:
         'example07'
     ]
 
+    @pytest.mark.hardware
     @pytest.mark.parametrize("example_name", examples)
     def test_example_has_main_function(self, example_name):
         """Test that example has a main() function"""
@@ -62,11 +63,13 @@ class TestExampleStructure:
 class TestExample01Series:
     """Test example01 (keyboard input with Elm architecture)"""
 
+    @pytest.mark.hardware
     def test_example01_structure(self):
         """Test example01 has correct structure"""
         import example01
         assert hasattr(example01, 'main')
 
+    @pytest.mark.hardware
     def test_example01_elm_architecture(self):
         """Test example01 has Elm architecture"""
         import example01
@@ -78,21 +81,25 @@ class TestExample01Series:
 class TestExample02Series:
     """Test example02 series (display examples)"""
 
+    @pytest.mark.hardware
     def test_example02_structure(self):
         """Test example02 has correct structure"""
         import example02
         assert hasattr(example02, 'main')
 
+    @pytest.mark.hardware
     def test_example02a_structure(self):
         """Test example02a has correct structure"""
         import example02a
         assert hasattr(example02a, 'main')
 
+    @pytest.mark.hardware
     def test_example02b_structure(self):
         """Test example02b has correct structure"""
         import example02b
         assert hasattr(example02b, 'main')
 
+    @pytest.mark.hardware
     def test_example02c_structure(self):
         """Test example02c has correct structure"""
         import example02c
@@ -102,6 +109,7 @@ class TestExample02Series:
 class TestExample04Series:
     """Test example04 series (keyboard learning game)"""
 
+    @pytest.mark.hardware
     def test_example04a_elm_architecture(self):
         """Test example04a has Elm architecture"""
         import example04
@@ -115,11 +123,13 @@ class TestExample04Series:
 class TestExample05:
     """Test example05 (obstacle jump game)"""
 
+    @pytest.mark.hardware
     def test_example05_structure(self):
         """Test example05 has correct structure"""
         import example05
         assert hasattr(example05, 'main')
 
+    @pytest.mark.hardware
     def test_example05_elm_architecture(self):
         """Verify example05 uses Elm architecture"""
         import example05
@@ -140,11 +150,13 @@ class TestExample05:
 class TestExample06:
     """Test example06 (character identification game)"""
 
+    @pytest.mark.hardware
     def test_example06_structure(self):
         """Test example06 has correct structure"""
         import example06
         assert hasattr(example06, 'main')
 
+    @pytest.mark.hardware
     def test_example06_elm_architecture(self):
         """Verify example06 uses Elm architecture"""
         import example06
@@ -166,11 +178,13 @@ class TestExample06:
 class TestExample07:
     """Test example07 (navigate lines and feel the dots)"""
 
+    @pytest.mark.hardware
     def test_example07_structure(self):
         """Test example07 has correct structure"""
         import example07
         assert hasattr(example07, 'main')
 
+    @pytest.mark.hardware
     def test_example07_elm_architecture(self):
         """Verify example07 uses Elm architecture"""
         import example07
@@ -189,6 +203,7 @@ class TestExample07:
         assert callable(example07.update_by_line_up)
         assert callable(example07.update_by_line_down)
 
+    @pytest.mark.hardware
     def test_example07_pattern_generation(self):
         """Test pattern generation functions"""
         import example07
@@ -208,6 +223,7 @@ class TestExample07:
             else:
                 assert alternating[i] == 0  # Space
 
+    @pytest.mark.hardware
     def test_example07_line_wrapping(self):
         """Test line navigation wrapping logic"""
         import example07

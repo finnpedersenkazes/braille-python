@@ -5,6 +5,8 @@ import sys
 import unittest
 from unittest.mock import Mock, patch
 
+import pytest
+
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
@@ -23,6 +25,7 @@ class TestModelModule(unittest.TestCase):
         self.assertTrue(hasattr(model, 'print_diagnostics'))
         self.assertTrue(callable(model.print_diagnostics))
 
+    @pytest.mark.hardware
     @patch('model.print_property')
     def test_print_diagnostics_calls_print_property(self, mock_print_property):
         """Test that print_diagnostics calls print_property for each field"""

@@ -5,6 +5,8 @@ import sys
 import unittest
 from unittest.mock import Mock, patch
 
+import pytest
+
 # Add src and examples to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'examples'))
@@ -54,6 +56,7 @@ class TestDevelopmentPlatform(unittest.TestCase):
 class TestElmArchitecture(unittest.TestCase):
     """Test Elm architecture implementation"""
 
+    @pytest.mark.hardware
     def test_example05_elm_architecture(self):
         """Test example05 implements full Elm architecture"""
         import example05
@@ -78,6 +81,7 @@ class TestElmArchitecture(unittest.TestCase):
         for key in expected_keys:
             self.assertIn(key, model, f"Model should have '{key}' key")
 
+    @pytest.mark.hardware
     def test_example04_elm_architecture(self):
         """Test example04 implements Elm architecture"""
         import example04
@@ -97,6 +101,7 @@ class TestElmArchitecture(unittest.TestCase):
 class TestLauncherIntegration(unittest.TestCase):
     """Test launcher integrates with examples"""
 
+    @pytest.mark.hardware
     @patch('sys.argv', ['main.py', '05'])
     @patch('example05.main')
     def test_launcher_runs_example05(self, mock_example_main):
