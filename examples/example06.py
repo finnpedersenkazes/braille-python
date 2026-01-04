@@ -355,7 +355,7 @@ def view(brl, m):
 def main():
     """Main game loop"""
     try:
-        printProperty("Initialization", "Before Connection")
+        print_property("Initialization", "Before Connection")
 
         # Initialization
         b = brlapi.Connection()

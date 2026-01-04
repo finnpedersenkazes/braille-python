@@ -34,7 +34,7 @@ def get_message(display_width, language, code):
     """Get localized message based on language and code"""
     if code == "start":
         if language == "fr":
-            if displayWidth < 20:
+            if display_width < 20:
                 message = "Touche éspace"
             else:
                 message = "Appuyez sur une touche"
@@ -353,11 +353,11 @@ def game_to_dots(m):
 
     # Display number of points. French system
     cells.append(brlapi.DOT6)  # Number coming
-    cells.append(digitDots(tens(m["points"])))  # 0
-    cells.append(digitDots(units(m["points"])))  # 0
+    cells.append(digit_dots(tens(m["points"])))  # 0
+    cells.append(digit_dots(units(m["points"])))  # 0
 
-    cells = dotsToDisplaySize(cells, m["displayWidth"])
-    printProperty("cells", str(cells))
+    cells = dots_to_display_size(cells, m["displayWidth"])
+    print_property("cells", str(cells))
 
     return bytes(cells)
 
