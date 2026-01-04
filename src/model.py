@@ -6,7 +6,6 @@ Application-specific models should be defined in individual example files
 
 from library import print_property
 
-
 # Example of a generic model initialization pattern
 # Applications should define their own init() and get_message() functions
 # based on their specific needs
@@ -16,7 +15,6 @@ from library import print_property
 def print_diagnostics(brl):
     """Print BrlAPI diagnostics information"""
     import brlapi
-    import louis
 
     print_property("File Descriptor", str(brl.fileDescriptor))
     print_property("Server Host", str(brl.host))

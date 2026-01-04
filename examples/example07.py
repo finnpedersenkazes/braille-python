@@ -28,8 +28,8 @@ Learning objectives:
 - Pattern recognition and consistency
 """
 
-import sys
 import os
+import sys
 
 import brlapi
 
@@ -38,16 +38,15 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # pylint: disable=wrong-import-position,import-error
 from library import (
-    print_property,
-    print_diagnostics,
-    handle_connection_error,
     char_to_braille_dots,
     digit_dots,
+    dots_to_display_size,
+    handle_connection_error,
+    print_diagnostics,
+    print_property,
     tens,
     units,
-    dots_to_display_size,
 )
-
 
 # ============================================================================
 # Model - Static line definitions and state

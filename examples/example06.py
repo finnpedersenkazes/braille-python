@@ -27,8 +27,8 @@ Learning objectives:
 - Braille keyboard input practice
 """
 
-import sys
 import os
+import sys
 import time
 
 import brlapi
@@ -38,19 +38,18 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # pylint: disable=wrong-import-position,import-error
 from library import (
-    print_property,
-    print_diagnostics,
-    handle_connection_error,
-    digit_dots,
-    tens,
-    units,
     char_to_braille_dots,
     combine_keys_to_dots,
+    digit_dots,
+    dots_to_display_size,
+    handle_connection_error,
+    print_diagnostics,
+    print_property,
     random_char,
     random_position,
-    dots_to_display_size,
+    tens,
+    units,
 )
-
 
 # ============================================================================
 # Model - Game state initialization

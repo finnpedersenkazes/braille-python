@@ -1,8 +1,8 @@
 """Tests for src/update.py module"""
 
-import unittest
-import sys
 import os
+import sys
+import unittest
 
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))

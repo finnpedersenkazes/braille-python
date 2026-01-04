@@ -5,9 +5,9 @@ Contains reusable functions for logging, braille conversion, and utilities
 
 import datetime
 import os
+
 import brlapi
 import louis
-
 
 # ============================================================================
 # Logging utilities
@@ -309,7 +309,11 @@ def char_to_braille_dots(char):
         'x': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT6,
         'y': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6,
         'z': brlapi.DOT1 | brlapi.DOT3 | brlapi.DOT5 | brlapi.DOT6,
-        'é': brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3 | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6,  # Full cell
+        # Full cell
+        'é': (
+            brlapi.DOT1 | brlapi.DOT2 | brlapi.DOT3
+            | brlapi.DOT4 | brlapi.DOT5 | brlapi.DOT6
+        ),
     }
 
     return braille_map.get(char, 0)

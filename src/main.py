@@ -10,8 +10,8 @@ Usage:
     python src/main.py 03c       # Runs example03c
 """
 
-import sys
 import os
+import sys
 
 
 def main():

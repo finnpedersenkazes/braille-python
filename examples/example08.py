@@ -29,9 +29,9 @@ Learning objectives:
 - Detecting pattern interruptions through touch
 """
 
-import sys
 import os
 import random
+import sys
 
 import brlapi
 
@@ -40,12 +40,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # pylint: disable=wrong-import-position,import-error
 from library import (
-    print_property,
-    print_diagnostics,
-    handle_connection_error,
     char_to_braille_dots,
+    handle_connection_error,
+    print_diagnostics,
+    print_property,
 )
-
 
 # ============================================================================
 # Model - Line generation and state

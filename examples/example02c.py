@@ -6,8 +6,9 @@ Demonstrates progressive cell-by-cell filling animation
 Fills each cell with dots from position 1 to 8
 """
 
-import brlapi
 import time
+
+import brlapi
 
 
 def main():
@@ -15,14 +16,14 @@ def main():
     # brl.enterTtyMode(1)
     brl.enterTtyModeWithPath()
 
-    (displayLength, displayHeight) = brl.displaySize
+    (display_length, display_height) = brl.displaySize
 
-    print("display size: %i x %i" % (displayLength, displayHeight))
+    print(f"display size: {display_length} x {display_height}")
     print("driver name: " + str(brl.driverName))
 
     start = time.time()
     c = 0
-    fullCell = (
+    full_cell = (
         brlapi.DOT1
         | brlapi.DOT2
         | brlapi.DOT3
@@ -33,11 +34,11 @@ def main():
         | brlapi.DOT8
     )
     cells = []
-    for i in range(displayLength):
-        cells.append(fullCell)
+    for _i in range(display_length):
+        cells.append(full_cell)
 
     try:
-        while c < displayLength * 8:
+        while c < display_length * 8:
             t = time.time()
             timepassed = round(t - start)
             time.sleep(0.1)
@@ -59,16 +60,16 @@ def main():
                 dot = dot | brlapi.DOT4
 
             cells = []
-            for i in range(displayLength):
+            for i in range(display_length):
                 if c // 8 == i:
                     cells.append(dot)
                 else:
                     if i * 8 < c:
-                        cells.append(fullCell)
+                        cells.append(full_cell)
                     else:
                         cells.append(0)
 
-            print("c: %s, dot: %s, time: %s seconds" % (str(c), str(dot), str(timepassed)))
+            print(f"c: {c}, dot: {dot}, time: {timepassed} seconds")
 
             brl.writeDots(bytes(cells))
 

@@ -5,26 +5,25 @@ Example 05 - Jump over the obstacles game
 Demonstrates Elm-like architecture with Model-Update-View pattern
 """
 
-import brlapi
-import time
-import sys
 import os
+import sys
+import time
+
+import brlapi
 
 # Add src to path to import libraries
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from library import (
-    print_property,
-    print_diagnostics,
-    CURRENT_DATE_TIME,
-    handle_connection_error,
-    text_to_dots,
-    dots_to_display_size,
-    tens,
-    units,
     digit_dots,
+    dots_to_display_size,
+    handle_connection_error,
+    print_diagnostics,
+    print_property,
+    tens,
+    text_to_dots,
+    units,
 )
-
 
 # ============================================================================
 # Model - Game state initialization and messages
@@ -57,12 +56,12 @@ def get_message(display_width, language, code):
 
 def init(brl):
     """Initialize the game model with all possible states"""
-    displayWidth = brl.displaySize[0]
-    numberOfBlocks = displayWidth // 5
-    if numberOfBlocks >= 6:
-        pointBlocks = 2
+    display_width = brl.displaySize[0]
+    number_of_blocks = display_width // 5
+    if number_of_blocks >= 6:
+        point_blocks = 2
     else:
-        pointBlocks = 1
+        point_blocks = 1
     language = "en"  # or 'fr'
 
     return {
@@ -76,10 +75,10 @@ def init(brl):
         "counter": 0,
         "text": "",
         "language": language,
-        "displayWidth": displayWidth,
-        "message": get_message(displayWidth, language, "start"),
-        "pointBlocks": pointBlocks,
-        "gameBlocks": numberOfBlocks - pointBlocks,
+        "displayWidth": display_width,
+        "message": get_message(display_width, language, "start"),
+        "pointBlocks": point_blocks,
+        "gameBlocks": number_of_blocks - point_blocks,
         "gameDuration": 30,  # seconds
     }
 
@@ -225,7 +224,7 @@ def update_by_key(brl, m, key_code):
     """Update the model based on the key pressed"""
     # Keep information about the key pressed in the model
     k = brl.expandKeyCode(key_code)
-    m["code"] = "0X%X" % key_code
+    m["code"] = f"0X{key_code:X}"
     m["type"] = k["type"]
     m["command"] = k["command"]
     m["argument"] = k["argument"]
@@ -277,15 +276,15 @@ def game_to_dots(m):
     cells = []
 
     # Calculated cursor dots
-    cursorDots = 0
+    cursor_dots = 0
     if m["cursorPos"] == 0:
-        cursorDots = brlapi.DOT7 | brlapi.DOT8
+        cursor_dots = brlapi.DOT7 | brlapi.DOT8
     elif m["cursorPos"] == 1:
-        cursorDots = brlapi.DOT3 | brlapi.DOT6
+        cursor_dots = brlapi.DOT3 | brlapi.DOT6
     elif m["cursorPos"] == 2:
-        cursorDots = brlapi.DOT2 | brlapi.DOT5
+        cursor_dots = brlapi.DOT2 | brlapi.DOT5
     elif m["cursorPos"] == 3:
-        cursorDots = brlapi.DOT1 | brlapi.DOT4
+        cursor_dots = brlapi.DOT1 | brlapi.DOT4
 
     # Calculate moving obstacles
     for i in range(0, m["gameBlocks"]):
@@ -296,7 +295,7 @@ def game_to_dots(m):
         cell04 = 0
 
         if i == 0:
-            cell01 = cursorDots
+            cell01 = cursor_dots
 
         if m["obstaclePos"] == 0:
             cell00 = brlapi.DOT3 | brlapi.DOT7

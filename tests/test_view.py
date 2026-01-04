@@ -1,9 +1,8 @@
 """Tests for src/view.py module"""
 
-import unittest
-from unittest.mock import Mock, patch
-import sys
 import os
+import sys
+import unittest
 
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
@@ -25,7 +24,6 @@ class TestViewModule(unittest.TestCase):
 
     def test_view_imports_from_library(self):
         """Test that view module imports necessary functions from library"""
-        import view
 
         # View module should import display utilities
         # Just verify it can be imported without errors

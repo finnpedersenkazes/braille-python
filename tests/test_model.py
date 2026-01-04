@@ -1,9 +1,9 @@
 """Tests for src/model.py module"""
 
+import os
+import sys
 import unittest
 from unittest.mock import Mock, patch
-import sys
-import os
 
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
@@ -27,7 +27,6 @@ class TestModelModule(unittest.TestCase):
     def test_print_diagnostics_calls_print_property(self, mock_print_property):
         """Test that print_diagnostics calls print_property for each field"""
         import model
-        import brlapi
 
         # Create mock braille connection
         mock_brl = Mock()

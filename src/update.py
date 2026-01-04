@@ -10,8 +10,6 @@ This module provides examples and patterns for:
 - Collision detection patterns
 """
 
-import time
-import brlapi
 
 
 # Generic update pattern examples

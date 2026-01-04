@@ -6,28 +6,29 @@ Demonstrates animated dot moving across braille display
 Shows all 8 dot positions in each cell
 """
 
-import brlapi
 import time
+
+import brlapi
 
 
 def main():
     brl = brlapi.Connection()
     brl.enterTtyModeWithPath()
 
-    (displayLength, displayHeight) = brl.displaySize
+    (display_length, display_height) = brl.displaySize
 
-    print("display size: %i x %i" % (displayLength, displayHeight))
+    print(f"display size: {display_length} x {display_height}")
     print("driver name: " + str(brl.driverName))
 
     start = time.time()
     c = 0
     dot = brlapi.DOT1
     cells = []
-    for i in range(displayLength):
+    for _i in range(display_length):
         cells.append(dot)
 
     try:
-        while c < displayLength * 8:
+        while c < display_length * 8:
             t = time.time()
             timepassed = round(t - start)
             time.sleep(0.1)
@@ -49,13 +50,13 @@ def main():
                 dot = brlapi.DOT4
 
             cells = []
-            for i in range(displayLength):
+            for i in range(display_length):
                 if c // 8 == i:
                     cells.append(dot)
                 else:
                     cells.append(0)
 
-            print("c: %s, dot: %s, time: %s" % (str(c), str(dot), str(timepassed)))
+            print(f"c: {c}, dot: {dot}, time: {timepassed}")
 
             brl.writeDots(bytes(cells))
 

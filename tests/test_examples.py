@@ -1,6 +1,7 @@
 """Tests for example files"""
-import sys
 import os
+import sys
+
 import pytest
 
 # Add examples to path
@@ -38,7 +39,7 @@ class TestExampleStructure:
             'examples',
             f'{example_name}.py'
         )
-        with open(example_path, 'r') as f:
+        with open(example_path, encoding='utf-8') as f:
             content = f.read()
         assert 'if __name__ == "__main__"' in content, \
             f"{example_name} should have if __name__ == '__main__' guard"
@@ -52,7 +53,7 @@ class TestExampleStructure:
             'examples',
             f'{example_name}.py'
         )
-        with open(example_path, 'r') as f:
+        with open(example_path, encoding='utf-8') as f:
             content = f.read()
         assert 'import brlapi' in content, \
             f"{example_name} should import brlapi"

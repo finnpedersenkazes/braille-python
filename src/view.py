@@ -9,15 +9,6 @@ This module provides examples and patterns for:
 - Braille dot patterns
 """
 
-import brlapi
-from library import (
-    print_property,
-    text_to_dots,
-    dots_to_display_size,
-    tens,
-    units,
-    digit_dots,
-)
 
 
 # Generic view pattern examples

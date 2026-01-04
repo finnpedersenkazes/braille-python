@@ -6,8 +6,9 @@ Demonstrates animated counting from 0 to 100 on braille display
 No keyboard input required
 """
 
-import brlapi
 import time
+
+import brlapi
 
 
 def main():
@@ -22,13 +23,12 @@ def main():
         print("The driver name may show a configured driver, but no physical device is connected.")
         return
 
-    t = time.time()
     c = 0
     try:
         while c <= 100:
             c = c + 1
             time.sleep(0.1)
-            brl.writeText("counter: %s" % (c))
+            brl.writeText(f"counter: {c}")
 
     except Exception as e:
         print(e)

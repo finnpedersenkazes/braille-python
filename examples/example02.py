@@ -6,8 +6,9 @@ Demonstrates simple text output to braille display
 Displays "Hello World" message
 """
 
-import brlapi
 import time
+
+import brlapi
 
 
 def main():

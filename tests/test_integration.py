@@ -1,9 +1,9 @@
 """Integration tests for the braille-python development platform"""
 
-import unittest
-from unittest.mock import Mock, patch, MagicMock
-import sys
 import os
+import sys
+import unittest
+from unittest.mock import Mock, patch
 
 # Add src and examples to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
@@ -71,7 +71,10 @@ class TestElmArchitecture(unittest.TestCase):
         self.assertIsInstance(model, dict)
 
         # Model should have expected keys
-        expected_keys = ['cursorPos', 'obstaclePos', 'points', 'collision', 'stop', 'counter', 'displayWidth', 'message']
+        expected_keys = [
+            'cursorPos', 'obstaclePos', 'points', 'collision',
+            'stop', 'counter', 'displayWidth', 'message'
+        ]
         for key in expected_keys:
             self.assertIn(key, model, f"Model should have '{key}' key")
 
@@ -123,7 +126,7 @@ class TestConsistency(unittest.TestCase):
         for filename in example_files:
             filepath = os.path.join(examples_dir, filename)
             with self.subTest(file=filename):
-                with open(filepath, 'r') as f:
+                with open(filepath, encoding='utf-8') as f:
                     first_line = f.readline()
                     self.assertTrue(
                         first_line.startswith('#!'),
@@ -142,7 +145,7 @@ class TestConsistency(unittest.TestCase):
         for filename in example_files:
             filepath = os.path.join(examples_dir, filename)
             with self.subTest(file=filename):
-                with open(filepath, 'r') as f:
+                with open(filepath, encoding='utf-8') as f:
                     content = f.read()
                     self.assertIn(
                         'if __name__ == "__main__":',

@@ -1,29 +1,28 @@
 """Tests for src/library.py"""
-import sys
 import os
-import pytest
+import sys
 from datetime import datetime
 
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from library import (
-    format_time_stamp,
-    adjust_number,
-    dots_to_display_size,
-    digit_dots,
-    tens,
-    units,
-    full_cell,
-    underline_cell,
-    place_cursor,
     adjust_dots,
-    check_display_connected,
-    char_to_braille_dots,
+    adjust_number,
     braille_dots_to_char,
+    char_to_braille_dots,
+    check_display_connected,
     combine_keys_to_dots,
+    digit_dots,
+    dots_to_display_size,
+    format_time_stamp,
+    full_cell,
+    place_cursor,
     random_char,
     random_position,
+    tens,
+    underline_cell,
+    units,
 )
 
 

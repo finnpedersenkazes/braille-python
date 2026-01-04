@@ -6,12 +6,12 @@ Demonstrates advanced braille translation and text input
 Interactive learning tool with Louis library integration, file logging, and internationalization
 """
 
+import datetime
+import errno
+import os
+
 import brlapi
 import louis
-import errno
-import time
-import datetime
-import os
 
 
 def format_time_stamp(date_time):
@@ -33,7 +33,7 @@ LOG_FILE_NAME = LOG_FILE_NAME + format_time_stamp(CURRENT_DATE_TIME) + "_log.txt
 def print_property(name, value):
     text = name + ": " + value
     print(text)
-    with open(LOG_FILE_NAME, "a") as f:
+    with open(LOG_FILE_NAME, "a", encoding="utf-8") as f:
         f.write(text)
         f.write("\n")
 
@@ -412,25 +412,24 @@ def main():
         if e.brlerrno == brlapi.ERROR_CONNREFUSED:
             print_property(
                 "Connection refused",
-                "Connection to %s refused. BRLTTY is too busy..." % (e.host),
+                f"Connection to {e.host} refused. BRLTTY is too busy...",
             )
         elif e.brlerrno == brlapi.ERROR_AUTHENTICATION:
             print_property(
                 "Authentication failed.",
-                "Authentication with %s failed. Please check the permissions of %s"
-                % (e.host, e.auth),
+                f"Authentication with {e.host} failed. Please check the permissions of {e.auth}",
             )
         elif e.brlerrno == brlapi.ERROR_LIBCERR and (
             e.libcerrno == errno.ECONNREFUSED or e.libcerrno == errno.ENOENT
         ):
             print_property(
                 "Connection failed",
-                "Connection to %s failed. Is BRLTTY really running?" % (e.host),
+                f"Connection to {e.host} failed. Is BRLTTY really running?",
             )
         else:
             print_property(
                 "Connection to BRLTTY failed",
-                "Connection to BRLTTY at %s failed: " % (e.host),
+                f"Connection to BRLTTY at {e.host} failed: ",
             )
         print_property("error", str(e))
         print_property("error.brlerrno", str(e.brlerrno))

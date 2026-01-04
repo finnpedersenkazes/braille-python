@@ -37,6 +37,23 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable pycodestyle (E, W), Pyflakes (F), isort (I), pep8-naming (N), pyupgrade (UP), flake8-bugbear (B), mccabe (C90)
+select = ["E", "F", "W", "I", "N", "UP", "B", "C90"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["N802"]  # Ignore naming in tests
+"examples/**/*.py" = []  # Check examples fully
+"scripts/**/*.py" = []  # Check scripts fully
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20  # Allow higher complexity for educational code
+
 [tool.pylint.main]
 # Add brlapi and louis to extension package allow list
 extension-pkg-allow-list = ["brlapi", "louis"]

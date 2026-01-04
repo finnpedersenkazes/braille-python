@@ -6,8 +6,9 @@ Demonstrates Elm architecture pattern (Model-Update-View)
 Reads keyboard input, displays key information, and captures typed text
 """
 
-import brlapi
 import errno
+
+import brlapi
 import Xlib.keysymdef.miscellany
 
 
@@ -68,11 +69,11 @@ def view(brl, m):
         brl.writeText(f"Count: {m['counter']}, {m['message']}, {m['text']}")
 
 
-def update(brl, m, keyCode):
+def update(brl, m, key_code):
     """Update model based on key press (Elm architecture)"""
     # Keep information about the key pressed in the model
-    k = brl.expandKeyCode(keyCode)
-    m["code"] = f"0x{keyCode:X}"
+    k = brl.expandKeyCode(key_code)
+    m["code"] = f"0x{key_code:X}"
     m["type"] = k["type"]
     m["command"] = k["command"]
     m["argument"] = k["argument"]
@@ -86,13 +87,13 @@ def update(brl, m, keyCode):
     m["counter"] = m["counter"] + 1
 
     # Identify specific keys
-    if keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME:
+    if key_code == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_HOME:
         m["message"] = "Home Button"
-    elif keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNUP:
+    elif key_code == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNUP:
         m["message"] = "Line Up"
-    elif keyCode == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNDN:
+    elif key_code == brlapi.KEY_TYPE_CMD | brlapi.KEY_CMD_LNDN:
         m["message"] = "Line Down"
-    elif keyCode == brlapi.KEY_TYPE_SYM | Xlib.keysymdef.miscellany.XK_Tab:
+    elif key_code == brlapi.KEY_TYPE_SYM | Xlib.keysymdef.miscellany.XK_Tab:
         m["message"] = "Tab"
     else:
         m["message"] = "Key pressed"
